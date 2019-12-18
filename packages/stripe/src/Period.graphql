@@ -1,0 +1,29 @@
+# import { DateTime } from './Scalars.graphql'
+
+"""
+The period associated with this invoice item.
+"""
+type Period {
+  """
+  The end of the period, which must be greater than or equal to the start.
+  """
+  end: DateTime
+  """
+  The start of the period.
+  """
+  start: DateTime
+}
+
+"""
+The period associated with this invoice item.
+"""
+input PeriodInput {
+  """
+  The end of the period, which must be greater than or equal to the start.
+  """
+  end: DateTime!
+  """
+  The start of the period.
+  """
+  start: DateTime!
+}

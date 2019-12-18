@@ -1,0 +1,158 @@
+# import { Account, AccountDeclineChargeOn, AccountType } from './Account.graphql'
+# import { BankAccount } from '../payment/BankAccount.graphql'
+# import { Card } from '../payment/Card.graphql'
+# import { CountryCode } from '../Country.graphql'
+# import { Currency } from '../Currency.graphql'
+# import { Node } from '../Node.graphql'
+# import { Object, ObjectType } from '../Object.graphql'
+
+interface PlatformAccount {
+  id: ID
+  object: ObjectType
+  """
+  (ID of a file upload) A logo for this account (at least 128px x 128px).
+  """
+  business_logo: ID @expandable
+  """
+  The publicly visible name of the business.
+  """
+  business_name: String
+  """
+  The publicly visible website of the business.
+  """
+  business_url: String
+  """
+  Whether the account can create live charges.
+  """
+  charges_enabled: Boolean
+  """
+  The account’s country
+  """
+  country: CountryCode
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+  """
+  A Boolean indicating if Stripe should try to reclaim negative balances from an attached bank account. See our Understanding Connect Account Balances documentation for details.
+  """
+  debit_negative_balances: Boolean
+  """
+  Account-level settings to automatically decline certain types of charges regardless of the decision of the card issuer.
+  """
+  decline_charge_on: AccountDeclineChargeOn
+  default_currency: Currency
+  """
+  Whether account details have been submitted. Standard accounts cannot receive payouts before this is true.
+  """ #
+  details_submitted: Boolean
+  """
+  The display name for this account. This is used on the Stripe Dashboard to differentiate between accounts.
+  """
+  display_name: String
+  """
+  The primary user’s email address.
+  """
+  email: String
+  """
+  External accounts (bank accounts and debit cards) currently attached to this account
+  """
+  external_accounts: ExternalAccountsConnection
+  """
+  Whether Stripe can send payouts to this account.
+  """
+  payouts_enabled: Boolean
+  """
+  Internal-only description of the product sold or service provided by the business. It’s used by Stripe for risk and underwriting purposes.
+  """
+  product_description: String
+  """
+  The default text that appears on credit card statements when a charge is made directly on the account.
+  """
+  statement_descriptor: String
+  """
+  A publicly shareable support mailing address for the business.
+  """
+  support_address: Address
+  """
+  A publicly shareable support email address for the business.
+  """
+  support_email: String
+  """
+  A publicly shareable support phone number for the business.
+  """
+  support_phone: String
+  """
+  The timezone used in the Stripe Dashboard for this account. A list of possible time zone values is maintained at the IANA Time Zone Database.
+  """
+  timezone: Timezone
+  """
+  The Stripe account type. Can be standard, express, or custom
+  """
+  type: AccountType
+
+  # PlatformAccount specific
+  """
+  Details on when funds from charges are available, and when they are paid out to an external account. See our Setting Bank and Debit Card Payouts documentation for details.
+  """
+  payout_schedule: PayoutSchedule
+  """
+  The text that appears on the bank account statement for payouts. If not set, this defaults to the platform’s bank descriptor as set in the Dashboard.
+  """
+  payout_statement_descriptor: String
+  verification: PlatformAccountVerification
+}
+
+type PlatformAccountVerification {
+  """
+  If the account is disabled, this string describes why the account can’t create charges or receive payouts. Can be rejected.fraud, rejected.terms_of_service, rejected.listed, rejected.other, fields_needed, listed, under_review, or other
+  """
+  disabled_reason: PlatformAccountVerificationDisabledReason
+  """
+  By what time the fields_needed must be provided. If this date is in the past, the account is already in bad standing, and providing fields_needed is necessary to re-enable payouts and prevent other consequences. If this date is in the future, fields_needed must be provided to ensure the account remains in good standing.
+  """
+  due_by: DateTime
+  """
+  Field names that need to be provided for the account to remain in good standing. Nested fields are separated by . (for example, legal_entity.first_name).
+  """
+  fields_needed: [String]
+}
+
+enum PlatformAccountVerificationDisabledReason {
+  REJECTED__FRAUD
+  REJECTED__TERMS_OF_SERVICE
+  REJECTED__LISTED
+  REJECTED__OTHER
+  FIELDS_NEEDED
+  LISTED
+  UNDER_REVIEW
+  OTHER
+}
+
+#
+
+type PayoutSchedule {
+  """
+  The number of days charges for the account will be held before being paid out.
+  """
+  delay_days: Int
+  interval: PayoutScheduleInterval
+  """
+  The day of the month funds will be paid out. Only shown if interval is monthly. Payouts scheduled between the 29th and 31st of the month are sent on the last day of shorter months.
+  """
+  monthly_anchor: Int
+  """
+  The day of the week funds will be paid out, of the style ‘monday’, ‘tuesday’, etc. Only shown if interval is weekly.
+  """
+  weekly_anchor: String
+}
+
+"""
+How frequently funds will be paid out. One of manual (transfers only created via API call), daily, weekly, or monthly.
+"""
+enum PayoutScheduleInterval {
+  MANUAL
+  DAILY
+  WEEKLY
+  MONTHLY
+}

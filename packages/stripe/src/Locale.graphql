@@ -1,0 +1,17 @@
+enum Locale {
+  auto
+  da
+  de
+  en
+  es
+  fi
+  fr
+  it
+  ja
+  nb
+  nl
+  pl
+  pt
+  sv
+  zh
+}

@@ -1,0 +1,130 @@
+# import { CountryCode } from './Country.graphql'
+
+type Address {
+  city: String
+  """
+  2-letter country code.
+  """
+  country: CountryCode
+  """
+  Address line 1 (Street address/PO Box/Company name).
+  """
+  line1: String
+  """
+  Address line 2 (Apartment/Suite/Unit/Building).
+  """
+  line2: String
+  """
+  ZIP or postal code.
+  """
+  postal_code: String
+  """
+  State/County/Province/Region.
+  """
+  state: String
+}
+
+type JapaneseAddress {
+  city: String
+  """
+  2-letter country code.
+  """
+  country: CountryCode
+  """
+  Block/Building number.
+  """
+  line1: String
+  """
+  Building details.
+  """
+  line2: String
+  """
+  ZIP or postal code.
+  """
+  postal_code: String
+  """
+  Prefecture.
+  """
+  state: String
+  """
+  Town/cho-me.
+  """
+  town: String
+}
+
+input AddressInput {
+  """
+  Address line 1 (Street address/PO Box/Company name).
+  """
+  line1: String!
+  city: String
+  country: CountryCode
+  """
+  Address line 2 (Apartment/Suite/Unit/Building).
+  """
+  line2: String
+  """
+  ZIP or postal code.
+  """
+  postal_code: String
+  """
+  State/County/Province/Region.
+  """
+  state: String
+}
+
+"""
+The Kana variation of the person's address (Japan only).
+"""
+input AddressKanaInput {
+  """
+  City or ward. This can be unset by updating the value to null and then saving.
+  """
+  city: String
+  """
+  Two-letter country code (ISO 3166-1 alpha-2). This can be unset by updating the value to null and then saving.
+  """
+  country: CountryCode
+  """
+  Block or building number. This can be unset by updating the value to null and then saving.
+  """
+  line1: String
+  line2: String
+  postalCode: String
+  state: String
+  town: String
+}
+
+"""
+Block or building number. This can be unset by updating the value to null and then saving.
+"""
+input AddressKanjiInput {
+  """
+  City or ward. This can be unset by updating the value to null and then saving.
+  """
+  city: String
+  """
+  Two-letter country code (ISO 3166-1 alpha-2). This can be unset by updating the value to null and then saving.
+  """
+  country: CountryCode
+  """
+  Block or building number. This can be unset by updating the value to null and then saving.
+  """
+  line1: String
+  """
+  Building details. This can be unset by updating the value to null and then saving.
+  """
+  line2: String
+  """
+  Town or cho-me. This can be unset by updating the value to null and then saving.
+  """
+  postalCode: String
+  """
+  Prefecture. This can be unset by updating the value to null and then saving.
+  """
+  state: String
+  """
+  Town or cho-me. This can be unset by updating the value to null and then saving.
+  """
+  town: String
+}

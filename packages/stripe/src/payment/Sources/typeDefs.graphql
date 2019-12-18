@@ -1,0 +1,579 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { Address, AddressInput } from '../../Address.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { CountryCode } from '../../Country.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Card } from '../Cards/typeDefs.graphql'
+# import Directives from '../../Directives.graphql'
+# import { CustomerWhereUniqueInput } from '../../core/Customers/typeDefs.graphql'
+# import { BusinessType } from '../../BusinessType.graphql'
+# import { PaymentMethodAchCreditTransfer, PaymentMethodAchDebit, PaymentMethodAlipay, PaymentMethodBancontact, PaymentMethodCard, PaymentMethodCardPresent, PaymentMethodEPS, PaymentMethodGiropay, PaymentMethodiDEAL, PaymentMethodMultibanco, PaymentMethodPrzelewy24, PaymentMethodSOFORT, PaymentMethodWeChatPay} from '../../PaymentMethod.graphql'
+
+type Query {
+  """
+  Retrieves an existing source object. Supply the unique source ID from a source creation request and Stripe will return the corresponding up-to-date source object information.
+  """
+  retrieveSource(where: SourceWhereUniqueInput!): Source
+}
+
+type Mutation {
+  """
+  Creates a new source object.
+  """
+  createSource(data: SourceCreateInput!): Source
+  """
+  Updates the specified source by setting the values of the parameters passed. Any parameters not provided will be left unchanged.
+
+  This request accepts the metadata and owner as arguments. It is also possible to update type specific information for selected payment methods. Please refer to our payment method guides for more detail.
+  """
+  updateSource(where: SourceWhereUniqueInput!, data: SourceUpdateInput!): Source
+  """
+  Attaches a Source object to a Customer. The source must be in a chargeable or pending state.
+  """
+  attachSource(
+    whereCustomer: CustomerWhereUniqueInput!
+    """
+    The identifier of the source to be attached.
+    """
+    whereSource: SourceWhereUniqueInput!
+  ): Source
+  """
+  Detaches a Source object from a Customer. The status of a source is changed to consumed when it is detached and it can no longer be used to create a charge.
+  """
+  detachSource(
+    whereCustomer: CustomerWhereUniqueInput!
+    """
+    The identifier of the source to be attached.
+    """
+    whereSource: SourceWhereUniqueInput!
+  ): Source
+}
+
+"""
+https://stripe.com/docs/api/sources
+"""
+type Source implements Node & Object {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  """
+  A positive integer in the smallest currency unit (that is, 100 cents for $1.00, or 1 for ¥1, Japanese Yen being a zero-decimal currency) representing the total amount associated with the source. This is the amount for which the source will be chargeable once ready. Required for single_use sources.
+  """
+  amount: Int
+  """
+  The client secret of the source. Used for client-side retrieval using a publishable key.
+  """
+  client_secret: String
+  """
+  Information related to the code verification flow. Present if the source is authenticated by a verification code (flow is code_verification).
+  """
+  code_verification: CodeVerification
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+  """
+  Three-letter ISO code for the currency associated with the source. This is the currency for which the source will be chargeable once ready. Required for single_use sources.
+  """
+  currency: Currency
+  """
+  The ID of the customer to which this source is attached. This will not be present when the source has not been attached to a customer.
+  """
+  customer: ID
+  """
+  The authentication flow of the source. flow is one of redirect, receiver, code_verification, none.
+  """
+  flow: Flow
+  """
+  Has the value true if the object exists in live mode or the value false if the object exists in test mode.
+  """
+  livemode: Boolean
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+  """
+  Information about the owner of the payment instrument that may be used or required by particular source types.
+  """
+  owner: Owner
+  """
+  Information related to the receiver flow. Present if the source is a receiver (flow is receiver).
+  """
+  receiver: Receiver
+  """
+  Information related to the redirect flow. Present if the source is authenticated by a redirect (flow is redirect).
+  """
+  redirect: Redirect
+  """
+  Extra information about a source. This will appear on your customer’s statement every time you charge the source.
+  """
+  statement_descriptor: String
+  """
+  The status of the source, one of canceled, chargeable, consumed, failed, or pending. Only chargeable sources can be used to create a charge.
+  """
+  status: SourceStatus
+  """
+  Either reusable or single_use. Whether this source should be reusable or not. Some source types may or may not be reusable by construction, while others may leave the option at creation. If an incompatible value is passed, an error will be returned.
+  """
+  usage: SourceUsage
+  # see type
+  #
+  """
+  The type of the source. The type is a payment method, one of ach_credit_transfer, ach_debit, alipay, bancontact, card, card_present, eps, giropay, ideal, multibanco, p24, paper_check, sepa_credit_transfer, sepa_debit, sofort, three_d_secure, or wechat. An additional hash is included on the source with a name matching this value. It contains additional information specific to the payment method used.
+  """
+  type: SourceType
+  """
+  https://stripe.com/docs/sources/ach-credit-transfer
+  """
+  ach_credit_transfer: PaymentMethodAchCreditTransfer
+  ach_debit: PaymentMethodAchDebit
+  alipay: PaymentMethodAlipay
+  bancontact: PaymentMethodBancontact
+  card: PaymentMethodCard
+  card_present: PaymentMethodCardPresent
+  eps: PaymentMethodEPS
+  giropay: PaymentMethodGiropay
+  ideal: PaymentMethodiDEAL
+  multibanco: PaymentMethodMultibanco
+  p24: PaymentMethodPrzelewy24
+  # paper_check:
+  #sepa_credit_transfer:
+  sepa_debit: PaymentMethodSEPADirectDebit
+  sofort: PaymentMethodSOFORT
+  #three_d_secure:
+  wechat: PaymentMethodWeChatPay
+}
+
+enum SourceUsage {
+  reusable
+  single_use
+}
+
+enum SourceType {
+  ach_credit_transfer
+  ach_debit
+  alipay
+  bancontact
+  card
+  card_present
+  eps
+  giropay
+  ideal
+  multibanco
+  p24
+  paper_check
+  sepa_credit_transfer
+  sepa_debit
+  sofort
+  three_d_secure
+  wechat
+}
+
+"""
+The status of the source, one of canceled, chargeable, consumed, failed, or pending. Only chargeable sources can be used to create a charge.
+"""
+enum SourceStatus {
+  CANCELED
+  CHARGEABLE
+  CONSUMED
+  FAILED
+  PENDING
+}
+
+type Owner {
+  """
+  Owner’s address.
+  """
+  address: Address
+  """
+  Owner’s email address.
+  """
+  email: String
+  """
+  Owner’s full name.
+  """
+  name: String
+  """
+  Owner’s phone number (including extension).
+  """
+  phone: String
+  """
+  Verified owner’s address. Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated.
+  """
+  verified_address: Address
+  """
+  Verified owner’s email address. Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated.
+  """
+  verified_email: String
+  """
+  Verified owner’s full name. Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated.
+  """
+  verified_name: String
+  """
+  Verified owner’s phone number (including extension). Verified values are verified or provided by the payment method directly (and if supported) at the time of authorization or settlement. They cannot be set or mutated.
+  """
+  verified_phone: String
+}
+
+type Receiver {
+  """
+  The address of the receiver source. This is the value that should be communicated to the customer to send their funds to.
+  """
+  address: String
+  """
+  The total amount that was charged by you. The amount charged is expressed in the source’s currency.
+  """
+  amount_charged: Int
+  """
+  The total amount received by the receiver source. amount_received = amount_returned + amount_charged is true at all time. The amount received is expressed in the source’s currency.
+  """
+  amount_received: Int
+  """
+  The total amount that was returned to the customer. The amount returned is expressed in the source’s currency.
+  """
+  amount_returned: Int
+  """
+  Type of refund attribute method, one of email, manual, or none.
+  """
+  refund_attributes_method: RefundAttributesMethod
+  """
+  Type of refund attribute status, one of missing, requested, or available.
+  """
+  refund_attributes_status: RefundAttributesStatus
+}
+
+"""
+
+"""
+type Redirect {
+  """
+  The failure reason for the redirect, either user_abort (the customer aborted or dropped out of the redirect flow), declined (the authentication failed or the transaction was declined), or processing_error (the redirect failed due to a technical error). Present only if the redirect status is failed.
+  """
+  failure_reason: FailureReason
+  """
+  The URL you provide to redirect the customer to after they authenticated their payment.
+  """
+  return_url: String
+  """
+  The status of the redirect, either pending (ready to be used by your customer to authenticate the transaction), succeeded (succesful authentication, cannot be reused) or not_required (redirect should not be used) or failed (failed authentication, cannot be reused).
+  """
+  status: RedirectStatus
+  """
+  The URL provided to you to redirect a customer to as part of a redirect authentication flow.
+  """
+  url: String
+}
+
+"""
+The status of the redirect.
+"""
+enum RedirectStatus {
+  PENDING
+  SUCCEEDED
+  NOT_REQUIRED
+  FAILED
+}
+
+"""
+The failure reason for the redirect.
+"""
+enum FailureReason {
+  USER_ABORT
+  DECLINED
+  PROCESSING_ERROR
+}
+
+"""
+Type of refund attribute method.
+"""
+enum RefundAttributesMethod {
+  email
+  manual
+  none
+}
+
+"""
+Type of refund attribute status.
+"""
+enum RefundAttributesStatus {
+  MISSING
+  REQUESTED
+  AVAILABLE
+}
+
+type CodeVerification {
+  """
+  The number of attempts remaining to authenticate the source object with a verification code.
+  """
+  attemps_remainig: Int
+  """
+  The status of the code verification, either pending (awaiting verification, attempts_remaining should be greater than 0), succeeded (successful verification) or failed (failed verification, cannot be verified anymore as attempts_remaining should be 0).
+  """
+  status: CodeVerificationStatus
+}
+
+"""
+The authentication flow of the source.
+"""
+enum Flow {
+  redirect
+  receiver
+  code_verification
+  none
+}
+
+"""
+The status of the code verification, either pending (awaiting verification, attempts_remaining should be greater than 0), succeeded (successful verification) or failed (failed verification, cannot be verified anymore as attempts_remaining should be 0).
+"""
+enum CodeVerificationStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+input SourceWhereUniqueInput {
+  id: ID!
+}
+
+# Create A Source
+
+input SourceCreateInput {
+  """
+  Amount associated with the source. This is the amount for which the source
+  will be chargeable once ready. Required for `single_use` sources.
+  """
+  amount: Int
+
+  """
+  Three-letter [ISO code for the currency](https://stripe.com/docs/currencies)
+  associated with the source. This is the currency for which the source will be
+  chargeable once ready.
+  """
+  currency: Currency
+
+  """
+  The authentication `flow` of the source to create. `flow` is one of
+  `redirect`, `receiver`, `code_verification`, `none`. It is generally inferred
+  unless a type supports multiple flows.
+  """
+  flow: Flow
+
+  """
+  Information about a mandate possibility attached to a source object (generally
+  for bank debits) as well as its acceptance status.
+  """
+  mandate: MandateInput
+
+  """
+  A set of key-value pairs that you can attach to a source object. It can be
+  useful for storing additional information about the source in a structured format.
+  """
+  metadata: JSON
+
+  """
+  Information about the owner of the payment instrument that may be used or required by particular source types.
+  """
+  owner: OwnerInput
+
+  """
+  Optional parameters for the receiver flow. Can be set only if the source is a receiver (`flow` is `receiver`).
+  """
+  receiver: ReceiverInput
+
+  """
+  Parameters required for the redirect flow. Required if the source is authenticated by a redirect (`flow` is `redirect`).
+  """
+  redirect: RedirectInput
+
+  """
+  An arbitrary string to be displayed on your customer's statement. As an
+  example, if your website is `RunClub` and the item you're charging for is a
+  race ticket, you may want to specify a `statement_descriptor` of `RunClub 5K
+  race ticket.` While many payment types will display this information, some may
+  not display it at all.
+  """
+  statement_descriptor: String
+
+  """
+  An optional token used to create the source. When passed, token properties will override source parameters.
+  """
+  token: String
+
+  """
+  The `type` of the source to create. Required unless `customer` and
+  `original_source` are specified (see the [Shared card
+  Sources](https://stripe.com/docs/sources/connect#shared-card-sources) guide)
+  """
+  type: String!
+  usage: SourceUsage
+}
+
+# Update a Source
+
+input SourceUpdateInput {
+  """
+  Information about a mandate possibility attached to a source object (generally for bank debits) as well as its acceptance status.
+  """
+  mandate: MandateInput
+  """
+  A set of key-value pairs that you can attach to a source object. It can be useful for storing additional information about the source in a structured format.
+  """
+  metadata: JSON
+  """
+  Information about the owner of the payment instrument that may be used or required by particular source types.
+  """
+  owner: OwnerInput
+}
+
+# MandateInput
+
+"""
+Information about a mandate possibility attached to a source object (generally
+for bank debits) as well as its acceptance status.
+"""
+input MandateInput {
+  """
+  The parameters required to notify Stripe of a mandate acceptance or refusal by the customer.
+  """
+  acceptance: MandateAcceptanceInput
+  """
+  The amount specified by the mandate. (Leave null for a mandate covering all amounts)
+  """
+  amount: String
+  """
+  The currency specified by the mandate. (Must match currency of the source)
+  """
+  currency: Currency
+  """
+  The interval of debits permitted by the mandate. Either one_time (just permitting a single debit), scheduled (with debits on an agreed schedule or for clearly-defined events), or variable(for debits with any frequency)
+  """
+  interval: MandateInterval
+  """
+  The method Stripe should use to notify the customer of upcoming debit instructions and/or mandate confirmation as required by the underlying debit network. Either email (an email is sent directly to the customer), manual (a source.mandate_notification event is sent to your webhooks endpoint and you should handle the notification) or none (the underlying debit network does not require any notification).
+  """
+  notificationMethod: MandateNotificationMethod
+}
+
+enum MandateInterval {
+  oneTime
+  scheduled
+  variable
+}
+
+enum MandateNotificationMethod {
+  deprecatedNone
+  email
+  manual
+  none
+  stripeEmail
+}
+
+input MandateAcceptanceInput {
+  """
+  The unix timestamp the mandate was accepted or refused at by the customer.
+  """
+  date: DateTime
+  """
+  The IP address from which the mandate was accepted or refused by the customer.
+  """
+  ip: String
+  """
+  The parameters required to store a mandate accepted offline. Should only be set if mandate[type] is offline
+  """
+  offline: OfflineInput
+  """
+  The parameters required to store a mandate accepted online. Should only be set if mandate[type] is online
+  """
+  online: OnlineInput
+  status: MandateAcceptanceStatus!
+  """
+  The type of acceptance information included with the mandate. Either online or offline
+  """
+  type: MandateAcceptanceType
+  """
+  The user agent of the browser from which the mandate was accepted or refused by the customer. This can be unset by updating the value to null and then saving.
+  """
+  userAgent: String
+}
+
+enum MandateAcceptanceStatus {
+  accepted
+  refused
+}
+
+enum MandateAcceptanceType {
+  offline
+  online
+}
+
+input OfflineInput {
+  """
+  An email to contact you with if a copy of the mandate is requested, required if type is offline.
+  """
+  contact_email: String!
+}
+
+input OnlineInput {
+  """
+  The unix timestamp the mandate was accepted or refused at by the customer.
+  """
+  date: DateTime!
+  """
+  The IP address from which the mandate was accepted or refused by the customer.
+  """
+  ip: String!
+  """
+  The user agent of the browser from which the mandate was accepted or refused by the customer. This can be unset by updating the value to null and then saving.
+  """
+  userAgent: String!
+}
+
+"""
+Parameters required for the redirect flow. Required if the source is authenticated by a redirect (`flow` is `redirect`).
+"""
+input RedirectInput {
+  """
+  The URL you provide to redirect the customer back to you after they authenticated their payment. It can use your application URI scheme in the context of a mobile application.
+  """
+  return_url: String!
+}
+
+"""
+Optional parameters for the receiver flow. Can be set only if the source is a receiver (`flow` is `receiver`).
+"""
+input ReceiverInput {
+  """
+  The method Stripe should use to request information needed to process a refund or mispayment. Either email (an email is sent directly to the customer) or manual (a source.refund_attributes_required event is sent to your webhooks endpoint). Refer to each payment method’s documentation to learn which refund attributes may be required.
+  """
+  refund_attributes_method: RefundAttributesMethod
+}
+
+# Owner Input
+
+"""
+Information about the owner of the payment instrument that may be used or required by particular source types.
+"""
+input OwnerInput {
+  """
+  Owner’s address.
+  """
+  address: AddressInput
+  """
+  Owner’s email address.
+  """
+  email: String @constraint(format: "email")
+  """
+  Owner’s full name.
+  """
+  name: String
+  """
+  Owner’s phone number.
+  """
+  phone: String
+}

@@ -1,0 +1,313 @@
+# import { Object, ObjectType } from '../../Object.graphql'
+# import Directives from '../../Directives.graphql'
+# import { AccountWhereUniqueInput } from '../Accounts/typeDefs.graphql'
+# import { BankAccount, BankAccountInput, BankAccountList, BankAccountWhereUniqueInput } from '../../payment/BankAccounts/typeDefs.graphql'
+# import { Card, CardList, CardWhereUniqueInput } from '../../payment/Cards/typeDefs.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { BusinessType } from '../../BusinessType.graphql'
+
+interface ExternalAccount {
+  """
+  Whether this bank account is the default external account for its currency.
+  """
+  default_for_currency: Boolean
+}
+
+type ExternalAccountList implements Object {
+  """
+  The list contains all external accounts that have been attached to the Stripe
+  account. These may be bank accounts or cards.
+  """
+  data: [ExternalAccount]
+  """
+  True if this list has another page of items after this one that can be fetched.
+  """
+  has_more: Boolean
+  """
+  String representing the object's type. Objects of the same type share the same value. Always has the value `list`.
+  """
+  object: ObjectType
+  """
+  The URL where this list can be accessed.
+  """
+  url: String
+}
+
+input ExternalAccountWherUniqueInput {
+  id: ID!
+}
+
+input ExternalAccountWhereInput {
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(max: 100)
+  """
+  A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+  """
+  starting_after: ID
+}
+
+# External Bank Account
+
+input ExternalBankAccountCreateInput {
+  """
+  Either a token, like the ones returned by Stripe.js, or a dictionary containing a user’s bank account details (with the options shown below).
+  """
+  external_account: BankAccountInput
+  """
+  When set to true, or if this is the first external account added in this currency, this account becomes the default external account for its currency.
+  """
+  default_for_currency: Boolean
+  """
+  A set of key-value pairs that you can attach to an external account object. It can be useful for storing additional information about the external account in a structured format.
+  """
+  metadata: JSON
+}
+
+input ExternalBankAccountUpdateInput {
+  """
+  The name of the person or business that owns the bank account. This can be unset by updating the value to null and then saving.
+  """
+  account_holder_name: String
+  """
+  The type of entity that holds the account. This can be either individual or company.
+  """
+  account_holder_type: BusinessType
+  """
+  When set to true, this becomes the default external account for its currency.
+  """
+  default_for_currency: Boolean
+  metadata: JSON
+}
+
+# External Card
+
+input ExternalCardCreateInput {
+  """
+  A token, like the ones returned by Stripe.js. Stripe will automatically validate the card.
+  """
+  external_account: ExterrnalCardInput!
+  """
+  When set to true, or if this is the first external account added in this currency, this account becomes the default external account for its currency.
+  """
+  default_for_currency: Boolean
+  """
+  A set of key-value pairs that you can attach to a card object. It can be useful for storing additional information about the card in a structured format.
+  """
+  metadata: JSON
+}
+
+input ExterrnalCardInput {
+  """
+  The type of payment source. Should be card.
+  """
+  object: CardObjectType!
+  """
+  The card number, as a string without any separators.
+  """
+  number: String!
+  """
+  Two-digit number representing the card's expiration month.
+  """
+  exp_month: Int!
+  """
+  Two- or four-digit number representing the card's expiration year.
+  """
+  exp_year: Int!
+  """
+  Card security code. Highly recommended to always include this value, but it's required only for accounts based in European countries.
+  """
+  cvc: Int
+  """
+  Required when adding a card to an account (not applicable to customers or recipients). The card (which must be a debit card) can be used as a transfer destination for funds in this currency. Currently, the only supported currency for debit card transfers is usd.
+  """
+  currency: Currency
+  """
+  Cardholder's full name.
+  """
+  name: String
+  """
+  A set of key-value pairs that you can attach to a card object. This can be useful for storing additional information about the card in a structured format.
+  """
+  metadata: JSON
+  """
+  Applicable only on accounts (not customers or recipients). If you set this to true (or if this is the first external account being added in this currency), this card will become the default external account for its currency.
+  """
+  default_for_currency: Boolean
+  """
+  Address line 1 (Street address / PO Box / Company name).
+  """
+  address_line1: String
+  """
+  Address line 2 (Apartment / Suite / Unit / Building).
+  """
+  address_line2: String
+  """
+  City / District / Suburb / Town / Village.
+  """
+  address_city: String
+  """
+  State / County / Province / Region.
+  """
+  address_state: String
+  """
+  ZIP or postal code.
+  """
+  address_zip: Int
+  """
+  Billing address country, if provided.
+  """
+  address_country: String
+}
+
+input ExternalCardUpdateInput {
+  """
+  City/District/Suburb/Town/Village. This can be unset by updating the value to null and then saving.
+  """
+  address_city: String
+  """
+  Billing address country, if provided when creating card. This can be unset by updating the value to null and then saving.
+  """
+  address_country: String
+  """
+  Address line 1 (Street address/PO Box/Company name). This can be unset by updating the value to null and then saving.
+  """
+  address_line1: String
+  """
+  Address line 2 (Apartment/Suite/Unit/Building). This can be unset by updating the value to null and then saving.
+  """
+  address_line2: String
+  """
+  State/County/Province/Region. This can be unset by updating the value to null and then saving.
+  """
+  address_state: String
+  """
+  ZIP or postal code. This can be unset by updating the value to null and then saving.
+  """
+  address_zip: String
+  """
+  When set to true, this becomes the default external account for its currency.
+  """
+  default_for_currency: Boolean
+  """
+  Two digit number representing the card’s expiration month.
+  """
+  exp_month: String
+  """
+  Four digit number representing the card’s expiration year.
+  """
+  exp_year: String
+  metadata: JSON
+  """
+  Cardholder name. This can be unset by updating the value to null and then saving.
+  """
+  name: String
+}
+
+type Query {
+  node(id: ID!): Node
+  # External Accounts
+  retrieveExternalAccount(
+    whereAccount: AccountWhereUniqueInput!
+    whereExternalAccount: ExternalAccountWherUniqueInput!
+  ): ExternalAccount
+  listExternalAccount(
+    whereAccount: AccountWhereUniqueInput!
+    where: ExternalAccountWhereInput!
+  ): ExternalAccountList
+
+  # Bank Accounts
+  """
+  By default, you can see the 10 most recent external accounts stored on a Custom account directly on the object, but you can also retrieve details about a specific bank account stored on the Custom account.
+  """
+  retrieveExternalBankAccount(
+    whereAccount: AccountWhereUniqueInput
+    whereBankAccount: BankAccountWhereUniqueInput
+  ): BankAccount
+  """
+  You can see a list of the bank accounts belonging to a Custom account. Note that the 10 most recent external accounts are always available by default on the corresponding Stripe object. If you need more than those 10, you can use this API method and the limit and starting_after parameters to page through additional bank accounts.
+  """
+  listExternalBankAccounts(
+    whereAccount: AccountWhereUniqueInput
+    where: ExternalAccountWhereInput
+  ): BankAccountList
+
+  # Cards
+  """
+  By default, you can see the 10 most recent external accounts stored on a Custom account directly on the object, but you can also retrieve details about a specific card stored on the Custom account.
+  """
+  retrieveExternalCard(
+    whereAccount: AccountWhereUniqueInput
+    whereCard: CardWhereUniqueInput
+  ): Card
+  """
+  You can see a list of the cards belonging to a Custom account. Note that the 10 most recent external accounts are available on the account object. If you need more than those 10, you can use this API method and the limit and starting_after parameters to page through additional cards.
+  """
+  listExternalCards(
+    whereAccount: AccountWhereUniqueInput
+    where: ExternalAccountWhereInput
+  ): CardList
+}
+
+type Mutation {
+  # Bank Accounts
+  """
+  When you create a new bank account, you must specify a Custom account to create it on.
+
+  If the bank account's owner has no other external account in the bank account's currency, the new bank account will become the default for that currency. However, if the owner already has a bank account for that currency, the new account will become the default only if the default_for_currency parameter is set to true.
+  """
+  createExternalBankAccount(
+    whereAccount: AccountWhereUniqueInput!
+    data: ExternalBankAccountCreateInput
+  ): BankAccount
+  """
+  You can delete destination bank accounts from a Custom account.
+
+  If a bank account's default_for_currency property is true, it can only be deleted if it is the only external account for that currency, and the currency is not the Stripe account's default currency. Otherwise, before deleting the account, you must set another external account to be the default for the currency.
+  """
+  updateExternalBankAccount(
+    whereAccount: AccountWhereUniqueInput!
+    whereBankAccount: BankAccountWhereUniqueInput!
+    data: ExternalBankAccountUpdateInput!
+  ): BankAccount
+  """
+  You can delete destination bank accounts from a Custom account.
+
+  If a bank account's default_for_currency property is true, it can only be deleted if it is the only external account for that currency, and the currency is not the Stripe account's default currency. Otherwise, before deleting the account, you must set another external account to be the default for the currency.
+  """
+  deleteExternalBankAccount(
+    whereAccount: AccountWhereUniqueInput!
+    whereBankAccount: BankAccountWhereUniqueInput!
+  ): BankAccount
+
+  # Cards
+  """
+  When you create a new debit card, you must specify a Custom account to create it on.
+
+  If the account has no default destination card, then the new card will become the default. However, if the owner already has a default then it will not change. To change the default, you should set default_for_currency to true when creating a card for a Custom account.
+  """
+  createExternalCard(
+    whereAccount: AccountWhereUniqueInput!
+    data: ExternalCardCreateInput!
+  ): Card
+  """
+  If you need to update only some card details, like the billing address or expiration date, you can do so without having to re-enter the full card details. Stripe also works directly with card networks so that your customers can continue using your service without interruption.
+  """
+  updateExternalCard(
+    whereAccount: AccountWhereUniqueInput!
+    whereCard: CardWhereUniqueInput!
+    data: ExternalCardUpdateInput!
+  ): Card
+  """
+  If a card's default_for_currency property is true, it can only be deleted if it is the only external account for that currency, and the currency is not the Stripe account's default currency. Otherwise, before deleting the card, you must set another external account to be the default for the currency.
+  """
+  deleteExternalCard(
+    whereAccount: AccountWhereUniqueInput!
+    whereCard: CardWhereUniqueInput!
+  ): Card
+}

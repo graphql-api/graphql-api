@@ -1,0 +1,26 @@
+directive @constraint(
+  # Strings
+  minLength: Int
+  maxLength: Int
+  startsWith: String
+  endsWith: String
+  contains: String
+  notContains: String
+  pattern: String
+  format: String
+  # Numbers (Int/Float)
+  min: Float
+  max: Float
+  exclusiveMin: Float
+  exclusiveMax: Float
+  multipleOf: Float
+) on INPUT_FIELD_DEFINITION
+
+directive @expandable on FIELD_DEFINITION
+
+directive @connectOnly on INPUT_FIELD_DEFINITION
+
+directive @default(value: String) on INPUT_FIELD_DEFINITION
+
+directive @expand on FIELD_DEFINITION
+

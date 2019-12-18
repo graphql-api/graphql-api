@@ -1,0 +1,393 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { CountryCode } from '../../Country.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import Directives from '../../Directives.graphql'
+# import { Customer, CustomerWhereUniqueInput } from '../../core/Customers/typeDefs.graphql'
+# import { ExternalAccount } from '../../connect/ExternalAccounts/typeDefs.graphql'
+# import { Account } from '../../connect/Accounts/typeDefs.graphql'
+
+enum Check {
+  pass
+  fail
+  unavailable
+  unchecked
+}
+
+enum Funding {
+  credit
+  debit
+  prepaid
+  unknown
+}
+
+enum AvailablePayoutMethods {
+  standard
+  instant
+}
+
+enum Brand {
+  AmericanExpress # American Express
+  DinersClub # Diners Club
+  Discover
+  JCB
+  MasterCard
+  UnionPay
+  Visa
+  Unknown
+}
+
+enum TokenizationMethod {
+  apple_pay
+  google_pay
+}
+
+"""
+https://stripe.com/docs/api/cards/object
+"""
+type Card implements ExternalAccount & Node & Object {
+  """
+  The account this card belongs to. This attribute will not be in the card
+  object if the card belongs to a customer or recipient instead.
+  """
+  account: Account @expandable
+  """
+  City/District/Suburb/Town/Village.
+  """
+  address_city: String
+  """
+  Billing address country, if provided when creating card.
+  """
+  address_country: String
+  """
+  Address line 1 (Street address/PO Box/Company name).
+  """
+  address_line1: String
+  """
+  If `address_line1` was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`.
+  """
+  address_line1_check: Check # "unchecked",
+  """
+  Address line 2 (Apartment/Suite/Unit/Building).
+  """
+  address_line2: String
+  """
+  State/County/Province/Region.
+  """
+  address_state: String
+
+  """
+  ZIP or postal code.
+  """
+  address_zip: String
+
+  """
+  If `address_zip` was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`.
+  """
+  address_zip_check: Check # "unchecked",
+  """
+  A set of available payout methods for this card. Will be either `["standard"]`
+  or `["standard", "instant"]`. Only values from this set should be passed as
+  the `method` when creating a transfer.
+  """
+  available_payout_methods: [AvailablePayoutMethods]
+
+  """
+  Card brand. Can be `American Express`, `Diners Club`, `Discover`, `JCB`, `MasterCard`, `UnionPay`, `Visa`, or `Unknown`.
+  """
+  brand: Brand
+
+  """
+  Two-letter ISO code representing the country of the card. You could use this
+  attribute to get a sense of the international breakdown of cards you've collected.
+  """
+  country: CountryCode
+  """
+  Three-letter ISO code for currency. Only applicable on accounts (not customers or recipients). The card can be used as a transfer destination for funds in this currency.
+  """
+  currency: Currency
+
+  """
+  The customer that this card belongs to. This attribute will not be in the card
+  object if the card belongs to an account or recipient instead.
+  """
+  customer: Customer @expandable
+
+  """
+  If a CVC was provided, results of the check: `pass`, `fail`, `unavailable`, or `unchecked`.
+  """
+  cvc_check: Check
+
+  """
+  Whether this card is the default external account for its currency.
+  """
+  default_for_currency: Boolean
+
+  """
+  (For tokenized numbers only.) The last four digits of the device account number.
+  """
+  dynamic_last4: String
+
+  """
+  Two-digit number representing the card's expiration month.
+  """
+  exp_month: Int
+
+  """
+  Four-digit number representing the card's expiration year.
+  """
+  exp_year: Int
+
+  """
+  Uniquely identifies this particular card number. You can use this attribute to
+  check whether two customers who've signed up with you are using the same card
+  number, for example.
+  """
+  fingerprint: String
+
+  """
+  Card funding type. Can be `credit`, `debit`, `prepaid`, or `unknown`.
+  """
+  funding: Funding
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+
+  """
+  The last four digits of the card.
+  """
+  last4: String
+
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful
+  for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+
+  """
+  Cardholder name.
+  """
+  name: String
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+
+  # """
+  # The recipient that this card belongs to. This attribute will not be in the
+  # card object if the card belongs to a customer or account instead.
+  # """
+  # recipient: String @expandable
+
+  """
+  If the card number is tokenized, this is the method that was used. Can be `apple_pay` or `google_pay`.
+  """
+  tokenizationMethod: TokenizationMethod
+}
+
+type CardList {
+  data: [Card]
+
+  """
+  True if this list has another page of items after this one that can be fetched.
+  """
+  has_more: Boolean
+
+  """
+  String representing the object's type. Objects of the same type share the same value. Always has the value `list`.
+  """
+  object: ObjectType
+
+  """
+  The URL where this list can be accessed.
+  """
+  url: String
+}
+
+input CardListInput {
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(max: 100)
+  """
+  A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+  """
+  starting_after: ID
+}
+
+input CardWhereUniqueInput {
+  """
+  The ID of the card to be updated.
+  """
+  id: ID!
+}
+
+input CardCreateInput {
+  """
+  A token, like the ones returned by Stripe.js. Stripe will automatically validate the card.
+  """
+  source: CardInput
+  """
+  A set of key-value pairs that you can attach to a card object. It can be useful for storing additional information about the card in a structured format.
+  """
+  metadata: JSON
+}
+
+input CardInput {
+  """
+  The type of payment source. Should be card.
+  """
+  object: CardObjectType!
+  """
+  The card number, as a string without any separators.
+  """
+  number: String!
+  """
+  Two-digit number representing the card's expiration month.
+  """
+  exp_month: Int!
+  """
+  Two- or four-digit number representing the card's expiration year.
+  """
+  exp_year: Int!
+  """
+  Card security code. Highly recommended to always include this value, but it's required only for accounts based in European countries.
+  """
+  cvc: Int
+  """
+  Cardholder's full name.
+  """
+  name: String
+  """
+  A set of key-value pairs that you can attach to a card object. This can be useful for storing additional information about the card in a structured format.
+  """
+  metadata: JSON
+  """
+  Address line 1 (Street address / PO Box / Company name).
+  """
+  address_line1: String
+  """
+  Address line 2 (Apartment / Suite / Unit / Building).
+  """
+  address_line2: String
+  """
+  City / District / Suburb / Town / Village.
+  """
+  address_city: String
+  """
+  State / County / Province / Region.
+  """
+  address_state: String
+  """
+  ZIP or postal code.
+  """
+  address_zip: Int
+  """
+  Billing address country, if provided.
+  """
+  address_country: String
+}
+
+enum CardObjectType {
+  card
+}
+
+input CardUpdateInput {
+  """
+  City/District/Suburb/Town/Village. This can be unset by updating the value to null and then saving.
+  """
+  address_city: String
+  """
+  Billing address country, if provided when creating card. This can be unset by updating the value to null and then saving.
+  """
+  address_country: String
+  """
+  Address line 1 (Street address/PO Box/Company name). This can be unset by updating the value to null and then saving.
+  """
+  address_line1: String
+  """
+  Address line 2 (Apartment/Suite/Unit/Building). This can be unset by updating the value to null and then saving.
+  """
+  address_line2: String
+  """
+  State/County/Province/Region. This can be unset by updating the value to null and then saving.
+  """
+  address_state: String
+  """
+  ZIP or postal code. This can be unset by updating the value to null and then saving.
+  """
+  address_zip: String
+  """
+  Two digit number representing the card’s expiration month.
+  """
+  exp_month: String
+  """
+  Four digit number representing the card’s expiration year.
+  """
+  exp_year: String
+  metadata: JSON
+  """
+  Cardholder name. This can be unset by updating the value to null and then saving.
+  """
+  name: String
+}
+
+type Query {
+  """
+  You can always see the 10 most recent cards directly on a customer; this method lets you retrieve details about a specific card stored on the customer.
+  """
+  retrieveCard(
+    whereCustomer: CustomerWhereUniqueInput!
+    whereCard: CardWhereUniqueInput!
+  ): Card
+  """
+  You can see a list of the cards belonging to a customer. Note that the 10 most recent sources are always available on the Customer object. If you need more than those 10, you can use this API method and the limit and starting_after parameters to page through additional cards.
+  """
+  listCards(
+    whereCustomer: CustomerWhereUniqueInput!
+    input: CardListInput
+  ): CardList
+}
+
+type Mutation {
+  """
+  When you create a new credit card, you must specify a customer or recipient on which to create it.
+
+  If the card’s owner has no default card, then the new card will become the default. However, if the owner already has a default, then it will not change. To change the default, you should either update the customer to have a new default_source, or update the recipient to have a new default_card.
+  """
+  createCard(
+    whereCustomer: CustomerWhereUniqueInput!
+    data: CardCreateInput!
+  ): Card
+  """
+  If you need to update only some card details, like the billing address or expiration date, you can do so without having to re-enter the full card details. Also, Stripe works directly with card networks so that your customers can continue using your service without interruption.
+
+  When you update a card, Stripe will automatically validate the card.
+  """
+  updateCard(
+    whereCustomer: CustomerWhereUniqueInput!
+    whereCard: CardWhereUniqueInput!
+    data: CardUpdateInput!
+  ): Card
+  """
+  You can delete cards from a customer.
+
+  If you delete a card that is currently the default source, then the most recently added source will become the new default. If you delete a card that is the last remaining source on the customer, then the default_source attribute will become null.
+
+  For recipients: if you delete the default card, then the most recently added card will become the new default. If you delete the last remaining card on a recipient, then the default_card attribute will become null.
+
+  Note that for cards belonging to customers, you might want to prevent customers on paid subscriptions from deleting all cards on file, so that there is at least one default card for the next invoice payment attempt.
+  """
+  deleteCard(
+    whereCustomer: CustomerWhereUniqueInput!
+    whereCard: CardWhereUniqueInput!
+  ): Card
+}

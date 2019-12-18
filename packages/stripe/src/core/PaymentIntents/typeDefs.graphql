@@ -1,0 +1,581 @@
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { ChargeList } from '../Charges/typeDefs.graphql'
+# import { Source, SourceType } from '../../payment/Sources/typeDefs.graphql'
+# import { Account } from '../../connect/Accounts/typeDefs.graphql'
+# import { Shipping, ShippingInput } from '../../Shipping.graphql'
+# import { CreatedInput } from '../../Created.graphql'
+# import Directives from '../../Directives.graphql'
+# import { TransferData, TransferDataInput } from '../../TransferData.graphql'
+# import { Customer } from '../Customers/typeDefs.graphql'
+# import { Review } from '../../fraud/Reviews/typeDefs.graphql'
+# import { Application } from '../../connect/Application.graphql'
+
+"""
+https://stripe.com/docs/api/payment_intents/object
+
+A PaymentIntent tracks the process of collecting a payment from your customer. We recommend that you create exactly one PaymentIntent for each order or customer session in your system. You can reference the PaymentIntent later to see the history of payment attempts for a particular session.
+
+A PaymentIntent transitions through multiple statuses throughout its lifetime as it interfaces with Stripe.js to perform authentication flows and ultimately creates at most one successful charge.
+"""
+type PaymentIntent implements Node & Object {
+  """
+  Amount intended to be collected by this PaymentIntent.
+  """
+  # retrievable with publishable key
+  amount: Float
+
+  """
+  Amount that can be captured from this PaymentIntent.
+  """
+  amount_capturable: Float
+
+  """
+  Amount that was collected by this PaymentIntent.
+  """
+  amount_received: Float
+
+  """
+  ID of the Connect application that created the PaymentIntent.
+  """
+  application: Application @expandable
+
+  """
+  The amount of the application fee (if any) for the resulting payment. See the
+  PaymentIntents [Connect usage
+  guide](https://stripe.com/docs/payments/payment-intents/usage#connect) for details.
+  """
+  application_fee_amount: Float
+
+  """
+  Populated when `status` is `canceled`, this is the time at which the
+  PaymentIntent was canceled. Measured in seconds since the Unix epoch.
+  """
+  # retrievable with publishable key
+  canceled_at: DateTime
+
+  """
+  User-given reason for cancellation of this PaymentIntent, one of `duplicate`,
+  `fraudulent`, `requested_by_customer`, or `failed_invoice`.
+  """
+  cancellation_reason: CancellationReason
+
+  """
+  Capture method of this PaymentIntent, one of `automatic` or `manual`.
+  """
+  # retrievable with publishable key
+  capture_method: CaptureMethod
+
+  """
+  Charges that were created by this PaymentIntent, if any.
+  """
+  charges: ChargeList
+
+  """
+  The client secret of this PaymentIntent. Used for client-side retrieval using
+  a publishable key. Please refer to [dynamic
+  authentication](https://stripe.com/docs/payments/dynamic-authentication) guide
+  on how `client_secret` should be handled.
+  """
+  # retrievable with publishable key
+  client_secret: String
+
+  """
+  Confirmation method of this PaymentIntent, one of `secret` or `publishable`.
+  """
+  # retrievable with publishable key
+  confirmation_method: ConfirmationMethod
+
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  # retrievable with publishable key
+  created: DateTime
+
+  """
+  Three-letter [ISO currency
+  code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+  a [supported currency](https://stripe.com/docs/currencies).
+  """
+  # retrievable with publishable key
+  currency: Currency
+
+  """
+  ID of the Customer this PaymentIntent is for if one exists.
+  """
+  customer: Customer @expandable
+
+  """
+  An arbitrary string attached to the object. Often useful for displaying to users.
+  """
+  # retrievable with publishable key
+  description: String
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+
+  """
+  The payment error encountered in the previous PaymentIntent confirmation.
+  """
+  last_payment_error: LastPaymentError
+
+  """
+  Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
+  """
+  # retrievable with publishable key
+  livemode: Boolean
+
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful
+  for storing additional information about the object in a structured format.
+  For more information, see the [documentation](https://stripe.com/docs/payments/payment-intents/creating-payment-intents#storing-information-in-metadata).
+  """
+  metadata: JSON
+
+  """
+  If present, this property tells you what actions you need to take in order for
+  your customer to fulfill a payment using the provided source.
+  """
+  # retrievable with publishable key
+  next_action: NextAction
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+
+  """
+  The account (if any) for which the funds of the PaymentIntent are intended.
+  See the PaymentIntents [Connect usage
+  guide](https://stripe.com/docs/payments/payment-intents/usage#connect) for details.
+  """
+  on_behalf_of: Account @expandable
+
+  #"""
+  #ID of the payment method used in this PaymentIntent.
+  #"""
+  #paymentMethod: ID
+
+  """
+  The list of payment method types (e.g. card) that this PaymentIntent is allowed to use.
+  """
+  payment_method_types: [String]
+
+  """
+  Email address that the receipt for the resulting payment will be sent to.
+  """
+  # retrievable with publishable key
+  receipt_email: String
+
+  """
+  ID of the review associated with this PaymentIntent, if any.
+  """
+  review: Review @expandable #to do Review
+  """
+  Shipping information for this PaymentIntent.
+  """
+  # retrievable with publishable key
+  shipping: Shipping
+
+  """
+  ID of the source used in this PaymentIntent.
+  """
+  # retrievable with publishable key
+  source: Source @expandable
+
+  """
+  Extra information about a PaymentIntent. This will appear on your customer's
+  statement when this PaymentIntent succeeds in creating a charge.
+  """
+  statement_descriptor: String
+
+  """
+  Status of this PaymentIntent, one of `requires_payment_method`,
+  `requires_confirmation`, `requires_action`, `processing`,
+  `requires_authorization`, `requires_capture`, `canceled`, or `succeeded`.
+  """
+  # retrievable with publishable key
+  status: PaymentIntentStatus
+
+  """
+  The data with which to automatically create a Transfer when the payment is
+  finalized. See the PaymentIntents [Connect usage
+  guide](https://stripe.com/docs/payments/payment-intents/usage#connect) for details.
+  """
+  transfer_data: TransferData
+
+  """
+  A string that identifies the resulting payment as part of a group. See the
+  PaymentIntents [Connect usage
+  guide](https://stripe.com/docs/payments/payment-intents/usage#connect) for details.
+  """
+  transfer_group: String
+}
+
+enum ConfirmationMethod {
+  manual
+  automatic
+}
+
+type LastPaymentError {
+  """
+  For card errors, the ID of the failed charge.
+  """
+  charge: ID
+  """
+  For some errors that could be handled programmatically, a short string indicating the error code reported.
+
+  https://stripe.com/docs/error-codes
+  """
+  code: String #todo
+  """
+  For card errors resulting from a card issuer decline, a short string indicating the card issuer’s reason for the decline if they provide one.
+  """
+  doc_url: String
+  """
+  A human-readable message providing more details about the error. For card errors, these messages can be shown to your users.
+  """
+  message: String
+  """
+  If the error is parameter-specific, the parameter related to the error. For example, you can use this to display a message near the correct form field.
+  """
+  param: String
+  """
+  The PaymentIntent object for errors returned on a request involving a PaymentIntent.
+  """
+  payment_intent: PaymentIntent
+  """
+  The source object for errors returned on a request involving a source.
+  """
+  source: Source
+  """
+  The type of error returned. One of api_connection_error, api_error, authentication_error, card_error, idempotency_error, invalid_request_error, or rate_limit_error
+  """
+  type: LastPaymentErrorType
+}
+
+enum LastPaymentErrorType {
+  api_connection_error
+  api_error
+  authentication_error
+  card_error
+  idempotency_error
+  invalid_request_error
+  rate_limit_error
+}
+
+enum CancellationReason {
+  duplicate
+  failed_invoice
+  fraudulent
+  requested_by_customer
+}
+
+enum CaptureMethod {
+  automatic
+  manual
+}
+
+type NextAction {
+  """
+  Contains instructions for authenticating a payment by redirecting your customer to another page or application.
+  """
+  redirect_to_url: NextActionRedirectToUrl
+  """
+  Type of the next action to perform, one of redirect_to_url or use_stripe_sdk.
+  """
+  type: NextActionType
+  """
+  When confirming a PaymentIntent with Stripe.js, Stripe.js depends on the contents of this object to invoke authentication flows. The shape of the contents is subject to change and is only intended to be used by Stripe.js.
+  """
+  use_stripe_sdk: JSON
+}
+
+type NextActionRedirectToUrl {
+  """
+  If the customer does not exit their browser while authenticating, they will be redirected to this specified URL after completion.
+  """
+  return_url: String
+  """
+  The URL you must redirect your customer to in order to authenticate the payment.
+  """
+  url: String
+}
+
+enum NextActionType {
+  redirect_to_url
+  use_stripe_sdk
+}
+
+enum PaymentIntentStatus {
+  canceled
+  processing
+  requiresAction
+  requiresAuthorization
+  requiresCapture
+  requiresConfirmation
+  requiresPaymentMethod
+  succeeded
+}
+
+# Create
+
+input PaymentIntentCreateInput {
+  """
+  Amount intended to be collected by this PaymentIntent
+  """
+  amount: Float!
+  """
+  Three-letter ISO currency code, in lowercase. Must be a supported currency.
+  """
+  currency: Currency!
+  """
+  The amount of the application fee (if any) that will be applied to the payment and transferred to the application owner’s Stripe account. For more information, see the PaymentIntents Connect usage guide.
+  """
+  application_fee_amount: Float
+  """
+  Capture method of this PaymentIntent, one of automatic or manual.
+  """
+  capture_method: CaptureMethod
+  """
+  Set to true to attempt to confirm this PaymentIntent immediately. This parameter defaults to false. If the payment method attached is a card, a return_url may be provided in case additional authentication is required. Read the expanded documentation to learn more about server-side confirmation.
+  """
+  confirm: Boolean
+  """
+  ID of the customer this PaymentIntent is for if one exists.
+  """
+  customer: ID
+  """
+  An arbitrary string attached to the object. Often useful for displaying to users. This can be unset by updating the value to null and then saving.
+  """
+  description: String
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  on_behalf_of: ID
+  """
+  The list of payment method types (e.g. card) that this PaymentIntent is allowed to use. If this is not provided, defaults to [“card”].
+  """
+  payment_method_types: [String]
+  """
+  Email address that the receipt for the resulting payment will be sent to.
+  """
+  receipt_email: String @constraint(format: "email")
+  """
+  Set to true to save the PaymentIntent’s payment method (either source or payment_method) to the associated customer. If the payment method is already attached, this parameter does nothing. This parameter defaults to false and applies to the payment method passed in the same request or the current payment method attached to the PaymentIntent and must be specified again if a new payment method is added.
+  """
+  save_payment_method: Boolean
+  """
+  Shipping information for this PaymentIntent.
+  """
+  shipping: ShippingInput
+  """
+  ID of the Source object to attach to this PaymentIntent.
+  """
+  source: ID
+  """
+  Extra information about a PaymentIntent. This will appear on your customer’s statement when this PaymentIntent succeeds in creating a charge.
+  """
+  statement_descriptor: String
+  """
+  The parameters used to automatically create a Transfer when the payment succeeds. For more information, see the PaymentIntents Connect usage guide.
+  """
+  transfer_data: TransferDataInput
+  """
+  A string that identifies the resulting payment as part of a group. See the PaymentIntents Connect usage guide for details.
+  """
+  transfer_group: String
+}
+
+input PaymentIntentWhereUniqueInput {
+  id: ID!
+}
+
+input PaymentIntentWhereInput {
+  """
+  A filter on the list based on the object created field. The value can be a string with an integer Unix timestamp, or it can be a dictionary with the following options:
+  """
+  created: CreatedInput
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(max: 100)
+  """
+  A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+  """
+  starting_after: ID
+}
+
+input PaymentIntentUpdateInput {
+  """
+  Amount intended to be collected by this PaymentIntent
+  """
+  amount: Float
+  """
+  The amount of the application fee (if any) for the resulting payment. See the PaymentIntents Connect usage guide for details.
+  """
+  application_fee_amount: Float
+  """
+  Three-letter ISO currency code, in lowercase. Must be a supported currency.
+  """
+  currency: Currency
+  """
+  ID of the customer this PaymentIntent is for if one exists.
+  """
+  customer: ID
+  """
+  An arbitrary string attached to the object. Often useful for displaying to users. This can be unset by updating the value to null and then saving.
+  """
+  description: String
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+  """
+  The list of payment method types (e.g. card) that this PaymentIntent is allowed to use.
+  """
+  payment_method_types: [String]
+  """
+  Email address that the receipt for the resulting payment will be sent to.
+  """
+  receipt_email: String @constraint(format: "email")
+  """
+  Set to true to save the PaymentIntent’s payment method (either source or payment_method) to the associated customer. If the payment method is already attached, this parameter does nothing. This parameter defaults to false and applies to the payment method passed in the same request or the current payment method attached to the PaymentIntent and must be specified again if a new payment method is added.
+  """
+  save_payment_method: Boolean
+  """
+  Shipping information for this PaymentIntent.
+  """
+  shipping: ShippingInput
+  """
+  ID of the Source object to attach to this PaymentIntent.
+  """
+  source: ID
+  """
+  A string that identifies the resulting payment as part of a group. transfer_group may only be provided if it has not been set. See the PaymentIntents Connect usage guide for details.
+  """
+  transfer_group: String
+}
+
+input PaymentIntentConfirmInput {
+  """
+  Email address that the receipt for the resulting payment will be sent to.
+  """
+  receipt_email: String @constraint(format: "email")
+  """
+  The URL to redirect your customer back to after they authenticate or cancel their payment on the payment method’s app or site. If you’d prefer to redirect to a mobile application, you can alternatively supply an application URI scheme. This parameter is only used for cards and other redirect-based payment methods.
+  """
+  return_url: String @constraint(format: "uri")
+  """
+  Set to true to save the PaymentIntent’s payment method (either source or payment_method) to the associated customer. If the payment method is already attached, this parameter does nothing. This parameter defaults to false and applies to the payment method passed in the same request or the current payment method attached to the PaymentIntent and must be specified again if a new payment method is added.
+  """
+  save_payment_method: Boolean
+  """
+  Shipping information for this PaymentIntent.
+  """
+  shipping: ShippingInput
+  """
+  ID of the Source object to attach to this PaymentIntent.
+  """
+  source: ID
+}
+
+"""
+A object with a data property that contains an array of up to limit PaymentIntents, starting after PaymentIntent starting_after. Each entry in the array is a separate PaymentIntent object. If no more PaymentIntents are available, the resulting array will be empty. This request should never throw an error.
+"""
+type PaymentIntentList implements Object {
+  object: ObjectType
+  url: String
+  has_more: Boolean
+  data: [PaymentIntent]
+}
+
+input PaymentIntentCaptureInput {
+  """
+  The amount to capture from the PaymentIntent, which must be less than or equal to the original amount. Any additional amount will be automatically refunded. Defaults to the full amount_capturable if not provided.
+  """
+  amount_to_capture: Float
+  """
+  The amount of the application fee (if any) that will be applied to the payment and transferred to the application owner’s Stripe account. For more information, see the PaymentIntents Connect usage guide.
+  """
+  application_fee_amount: Float
+}
+
+input PaymentIntentCancelInput {
+  """
+  Reason for canceling this PaymentIntent. If set, possible values are duplicate, fraudulent, requested_by_customer, or failed_invoice
+  """
+  cancellation_reason: CancellationReason
+}
+
+type Query {
+  node(id: ID!): Node
+  """
+  Retrieves the details of a PaymentIntent that has previously been created.
+
+  Client-side retrieval using a publishable key is allowed when the client_secret is provided in the query string.
+
+  When retrieved with a publishable key, only a subset of properties will be returned. Please refer to the payment intent object reference for more details.
+  """
+  retrievePaymentIntent(where: PaymentIntentWhereUniqueInput!): PaymentIntent
+  """
+  Returns a list of PaymentIntents.
+  """
+  listPaymentIntent(where: PaymentIntentWhereInput!): PaymentIntentList
+}
+
+type Mutation {
+  """
+  Amount intended to be collected by this PaymentIntent
+  """
+  createPaymentIntent(data: PaymentIntentCreateInput!): PaymentIntent
+  """
+  Updates a PaymentIntent object.
+  """
+  updatePaymentIntent(
+    where: PaymentIntentWhereUniqueInput!
+    data: PaymentIntentUpdateInput!
+  ): PaymentIntent
+  """
+  Confirm that your customer intends to pay with current or provided source. Upon confirmation, the PaymentIntent will attempt to initiate a payment.
+
+  If the selected source requires additional authentication steps, the PaymentIntent will transition to the requires_action status and suggest additional actions via next_source_action. If payment fails, the PaymentIntent will transition to the requires_payment_method status. If payment succeeds, the PaymentIntent will transition to the succeeded status (or requires_capture, if capture_method is set to manual). Read the expanded documentation to learn more about server-side confirmation.
+
+  When using a publishable key, the client_secret must be provided to confirm the PaymentIntent.
+  """
+  confirmPaymentIntent(
+    where: PaymentIntentWhereUniqueInput!
+    data: PaymentIntentConfirmInput!
+  ): PaymentIntent
+  """
+  Capture the funds of an existing uncaptured PaymentIntent where required_action="requires_capture".
+
+  Uncaptured PaymentIntents will be canceled exactly seven days after they are created.
+
+  Read the expanded documentation to learn more about separate authorization and capture.
+  """
+  capturePaymentIntent(
+    where: PaymentIntentWhereUniqueInput!
+    data: PaymentIntentCaptureInput!
+  ): PaymentIntent
+  """
+  A PaymentIntent object can be canceled when it is in one of these statuses: requires_payment_method, requires_capture, requires_confirmation, requires_action.
+
+  Once canceled, no additional charges will be made by the PaymentIntent and any operations on the PaymentIntent will fail with an error. For PaymentIntents with status='requires_capture', the remaining amount_capturable will automatically be refunded.
+  """
+  cancelPaymentIntent(
+    where: PaymentIntentWhereUniqueInput
+    data: PaymentIntentCancelInput
+  ): PaymentIntent
+}

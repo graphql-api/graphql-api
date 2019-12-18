@@ -1,0 +1,170 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Charge } from '../../core/Charges/typeDefs.graphql'
+# import { Customer } from '../../core/Customers/typeDefs.graphql'
+# import { OrderItem } from '../OrderItems/typeDefs.graphql'
+# import { Shipping, ShippingMethod } from '../../Shipping.graphql'
+# import Directives from '../../Directives.graphql'
+# import { Application } from '../../connect/Application.graphql'
+
+type Order implements Node & Object {
+    id: ID!
+    object: ObjectType
+    amount: Int
+    amount_returned: Int
+    application: Application @expandable
+    application_fee: Int
+    charge: Charge @expandable
+    """
+    Time at which the object was created. Measured in seconds since the Unix epoch.
+    """
+    created: DateTime
+    customer: Customer @expandable
+    currency: Currency
+    email: String
+    external_coupon_code: String
+    """
+    List of items constituting the order. An order can have up to 25 items.
+    """
+    items: [OrderItem]
+    """
+    Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
+    """
+    livemode: Boolean
+
+    """
+    Set of key-value pairs that you can attach to an object. This can be useful
+    for storing additional information about the object in a structured format.
+    """
+    metadata: JSON
+
+    returns: OrderReturnList
+
+    """
+    The shipping method that is currently selected for this order, if any. If
+    present, it is equal to one of the `id`s of shipping methods in the
+    `shipping_methods` array. At order creation time, if there are multiple
+    shipping methods, Stripe will automatically selected the first method.
+    """
+    selected_shipping_method: ID
+
+    """
+    The shipping address for the order. Present if the order is for goods to be shipped.
+    """
+    shipping: Shipping
+
+    """
+    A list of supported shipping methods for this order. The desired shipping
+    method can be specified either by updating the order, or when paying it.
+    """
+    shippingMethods: [ShippingMethod]
+    """
+    Current order status. One of created, paid, canceled, fulfilled, or returned. More details in the Orders Guide.
+
+    https://stripe.com/docs/orders/guide#understanding-order-statuses
+    """
+    status: OrderStatus
+    updated: DateTime
+    """
+    The user's order ID if it is different from the Stripe order ID.
+    """
+    upstreamId: ID
+}
+
+enum OrderStatus {
+    created
+    paid
+    canceled
+    fulfilled
+    returned
+}
+
+type OrderReturn implements Node & Object {
+    """
+    A positive integer in the smallest currency unit (that is, 100 cents for
+    $1.00, or 1 for ¥1, Japanese Yen being a zero-decimal currency) representing
+    the total amount for the returned line item.
+    """
+    amount: Float
+
+    """
+    Time at which the object was created. Measured in seconds since the Unix epoch.
+    """
+    created: DateTime
+
+    """
+    Three-letter [ISO currency
+    code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+    a [supported currency](https://stripe.com/docs/currencies).
+    """
+    currency: Currency
+
+    """
+    Unique identifier for the object.
+    """
+    id: ID!
+
+    """
+    The items included in this order return.
+    """
+    items: [OrderItem]
+
+    """
+    Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
+    """
+    livemode: Boolean
+
+    """
+    String representing the object's type. Objects of the same type share the same value.
+    """
+    object: ObjectType
+
+    """
+    The order that this return includes items from.
+    """
+    order: Order @expandable
+
+    """
+    The ID of the refund issued for this return.
+    """
+    refund: Refund @expandable
+}
+
+type OrderReturnList implements Object {
+    data: [OrderReturn]
+
+    """
+    True if this list has another page of items after this one that can be fetched.
+    """
+    hasMore: Boolean
+
+    """
+    String representing the object's type. Objects of the same type share the same value. Always has the value `list`.
+    """
+    object: ObjectType
+
+    """
+    The URL where this list can be accessed.
+    """
+    url: String
+}
+
+input OrderUpdateInput {
+    coupon: String
+    selected_shipping_method: String
+    status: OrderStatus
+}
+
+input OrderCreateInput {
+    currency: String!
+    coupon: String
+    customer: String
+    email: String
+    # items: [OrderItemCreationHash]
+}
+
+type Mutation {
+    createOrder(data: OrderCreateInput): Order
+}

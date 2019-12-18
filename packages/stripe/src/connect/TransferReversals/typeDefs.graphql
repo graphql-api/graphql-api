@@ -1,0 +1,86 @@
+# import { BalanceTransaction } from '../../core/Balance/typeDefs.graphql'
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import Directives from '../../Directives.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Refund } from '../../core/Refunds/typeDefs.graphql'
+# import { Transfer } from '../Transfers/typeDefs.graphql'
+
+type TransferReversal implements Node & Object {
+  """
+  Amount, in %s.
+  """
+  amount: Int
+
+  """
+  Balance transaction that describes the impact on your account balance.
+  """
+  balanceTransaction: BalanceTransaction @expandable
+
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+
+  """
+  Three-letter [ISO currency
+  code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+  a [supported currency](https://stripe.com/docs/currencies).
+  """
+  currency: Currency
+
+  """
+  Linked payment refund for the transfer reversal.
+  """
+  destination_payment_refund: Refund @expandable
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful
+  for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+
+  """
+  ID of the refund responsible for the transfer reversal.
+  """
+  source_refund: Refund @expandable
+
+  """
+  ID of the transfer that was reversed.
+  """
+  transfer: Transfer @expandable
+}
+
+"""
+A list of reversals that have been applied to the transfer.
+"""
+type TransferReversalList implements Object {
+  data: [TransferReversal]
+
+  """
+  True if this list has another page of items after this one that can be fetched.
+  """
+  has_more: Boolean
+
+  """
+  String representing the object's type. Objects of the same type share the same value. Always has the value [list].
+  """
+  object: ObjectType
+
+  """
+  The URL where this list can be accessed.
+  """
+  url: String
+}
+

@@ -1,0 +1,94 @@
+# import { Currency } from './Currency.graphql'
+# import { Node } from './Node.graphql'
+# import { DateTime, JSON } from './Scalars.graphql'
+# import { Object, ObjectType } from './Object.graphql'
+# import { Address, JapaneseAddress } from './Address.graphql'
+# import { DateOfBirth } from './LegalEntity.graphql'
+
+type Person implements Node & Object {
+  account: String
+  address: Address
+  address_kana: JapaneseAddress
+  address_kanji: JapaneseAddress
+
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+  dob: DateOfBirth
+  email: String
+  first_mame: String
+  first_name_kana: String
+  first_name_kanji: String
+  gender: String
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  id_number_provided: Boolean
+  last_name: String
+  last_name_kana: String
+  last_name_kanji: String
+  maiden_name: String
+
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful
+  for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  phone: String
+  relationship: PersonRelationship
+  requirements: PersonRequirements
+  ssn_last_4_provided: Boolean
+  verification: LegalEntityVerification
+}
+
+type PersonRequirements {
+  """
+  Fields that need to be collected to keep the person’s account enabled. If not collected by the account’s current_deadline, these fields are moved to past_due and the account is disabled.
+  """
+  currently_due: [String]
+  """
+  Fields that need to be collected assuming all volume thresholds are reached. As fields are needed, they are moved to currently_due and the account’s current_deadline is set.
+  """
+  eventually_due: [String]
+  """
+  Fields that weren’t collected by the account’s current_deadline. These fields need to be collected to enable payouts for the person’s account.
+  """
+  past_due: [String]
+}
+
+type PersonRelationship {
+  """
+  Whether the person opened the account. This person provides information about
+  themselves, and general information about the account.
+  """
+  account_opener: Boolean
+
+  """
+  Whether the person is a director of the account's legal entity.
+  """
+  director: Boolean
+
+  """
+  Whether the person is an owner of the account’s legal entity.
+  """
+  owner: Boolean
+
+  """
+  The percent owned by the person of the account's legal entity.
+  """
+  percent_ownership: Float
+
+  """
+  The person's title (e.g., CEO, Support Engineer).
+  """
+  title: String
+}
+

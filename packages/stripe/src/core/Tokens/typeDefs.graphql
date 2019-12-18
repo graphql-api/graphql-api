@@ -1,0 +1,304 @@
+# import { BankAccount } from '../../payment/BankAccounts/typeDefs.graphql'
+# import { Card } from '../../payment/Cards/typeDefs.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { BusinessType } from '../../BusinessType.graphql'
+# import { AccountWhereUniqueInput, CompanyInput, IndividualInput } from '../../connect/Accounts/typeDefs.graphql'
+
+"""
+Tokenization is the process Stripe uses to collect sensitive card or bank account details, or personally identifiable information (PII), directly from your customers in a secure manner. A token representing this information is returned to your server to use. You should use Checkout, Elements, or our mobile libraries to perform this process, client-side. This ensures that no sensitive card data touches your server, and allows your integration to operate in a PCI-compliant way.
+
+If you cannot use client-side tokenization, you can also create tokens using the API with either your publishable or secret API key. Keep in mind that if your integration uses this method, you are responsible for any PCI compliance that may be required, and you must keep your secret API key safe. Unlike with client-side tokenization, your customer's information is not sent directly to Stripe, so we cannot determine how it is handled or stored.
+
+Tokens cannot be stored or used more than once. To store card or bank account information for later use, you can create Customer objects or Custom accounts. Note that Radar, our integrated solution for automatic fraud protection, supports only integrations that use client-side tokenization.
+"""
+interface Token {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  client_ip: String
+  created: DateTime
+  livemode: Boolean
+  type: TokenType
+  used: Boolean
+}
+
+type AccountToken implements Node & Object & Token {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  client_ip: String!
+  created: DateTime
+  livemode: Boolean
+  type: TokenType
+  used: Boolean
+}
+
+type BankAccountToken implements Node & Object & Token {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  bank_account: BankAccount
+  client_ip: String
+  created: DateTime
+  livemode: Boolean
+  type: TokenType
+  used: Boolean
+}
+
+type CardToken implements Node & Object & Token {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  card: Card
+  client_ip: String
+  created: DateTime
+  livemode: Boolean
+  type: TokenType
+  used: Boolean
+}
+
+"""
+This token can be used in place of a personal_id_number in the Account Update API method. A PII token can be used only once.
+"""
+type PIIToken implements Node & Object & Token {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  client_ip: String!
+  created: DateTime
+  livemode: Boolean
+  type: TokenType
+  used: Boolean
+}
+
+enum TokenType {
+  account
+  bank_account
+  card
+  pii
+}
+
+###
+
+input TokenWhereUniqueInput {
+  """
+  The ID of the desired token.
+  """
+  id: ID!
+}
+
+# Account
+
+"""
+https://stripe.com/docs/api/tokens/create_account
+"""
+input AccountTokenCreateInput {
+  account: AccountInput!
+}
+
+input AccountInput {
+  """
+  The business type. Can be individual or company.
+  """
+  business_type: BusinessType
+  """
+  Information about the company or business. This field is null unless business_type is set to company.
+  """
+  company: CompanyInput
+  """
+  Information about the person represented by the account.
+  """
+  individual: IndividualInput
+  """
+  Whether the user described by the data in the token has been shown the Stripe Connected Account Agreement. When creating an account token to create a new Connect account, this value must be true.
+  """
+  tos_shown_and_accepted: Boolean @default(value: true)
+}
+
+# Bank Account
+
+input BankAccountTokenCreateInput {
+  """
+  The bank account this token will represent.
+  """
+  bank_account: BankAccountTokenInput
+}
+
+input BankAccountTokenInput {
+  """
+  The country in which the bank account is located.
+  """
+  country: String!
+  """
+  The currency the bank account is in. This must be a country/currency pairing that Stripe supports.
+  """
+  currency: Currency!
+  """
+  The name of the person or business that owns the bank account. This field is required when attaching the bank account to a Customer object.
+  """
+  account_holder_name: String
+  """
+  The type of entity that holds the account. This can be either individual or company. This field is required when attaching the bank account to a Customer object.
+  """
+  account_holder_type: BusinessType
+  """
+  The routing number, sort code, or other country-appropriate institution number for the bank account. For US bank accounts, this is required and should be the ACH routing number, not the wire routing number. If you are providing an IBAN for account_number, this field is not required.
+  """
+  routing_number: Int
+  """
+  The account number for the bank account, in string form. Must be a checking account.
+  """
+  account_number: String!
+}
+
+input CustomerBankAccountTokenCreateInput {
+  bank_account: ID
+  """
+  The customer (owned by the application’s account) for which to create a token. For use only with Stripe Connect. Also, this can be used only with an OAuth access token or Stripe-Account header. For more details, see Shared Customers.
+  """
+  customer: ID!
+}
+
+# Card Token
+
+input CardTokenCreateInput {
+  """
+  The card this token will represent. If you also pass in a customer, the card must be the ID of a card belonging to the customer. Otherwise, if you do not pass in a customer, this is an object containing a user's credit card details, with the options described below.
+  """
+  card: CardTokenInput
+}
+
+input CustomerCardTokenCreateInput {
+  card: String
+  """
+  The customer (owned by the application's account) for which to create a token. For use only with Stripe Connect. Also, this can be used only with an OAuth access token or Stripe-Account header. For more details, see Shared Customers.
+  """
+  customer: ID!
+}
+
+input CardTokenInput {
+  """
+  The card number, as a string without any separators.
+  """
+  number: String!
+  """
+  Two-digit number representing the card's expiration month.
+  """
+  exp_month: Int!
+  """
+  Two- or four-digit number representing the card's expiration year.
+  """
+  exp_year: Int!
+  """
+  Required in order to add the card to an account; in all other cases, this parameter is not used. When added to an account, the card (which must be a debit card) can be used as a transfer destination for funds in this currency. Currently, the only supported currency for debit card payouts is `usd`.
+  """
+  currency: Currency
+
+  """
+  Card security code. Highly recommended to always include this value, but it's required only for accounts based in European countries.
+  """
+  cvc: Int
+  """
+  Cardholder's full name.
+  """
+  name: String
+  """
+  Address line 1 (Street address / PO Box / Company name).
+  """
+  address_line1: String
+  """
+  Address line 2 (Apartment / Suite / Unit / Building).
+  """
+  address_line2: String
+  """
+  City / District / Suburb / Town / Village.
+  """
+  address_city: String
+  """
+  State / County / Province / Region.
+  """
+  address_state: String
+  """
+  ZIP or postal code.
+  """
+  address_zip: Int
+  """
+  Billing address country, if provided.
+  """
+  address_country: String
+}
+
+# PII Token
+
+input PIITokenCreateInput {
+  """
+  The PII this token will represent.
+  """
+  pii: PIIInput
+}
+
+input PIIInput {
+  """
+  The personal_id_number for the PII, in string form.
+  """
+  personal_id_number: String!
+}
+
+###
+
+type Query {
+  """
+  Retrieves the token with the given ID.
+  """
+  retrieveToken(where: TokenWhereUniqueInput!): Token
+}
+
+type Mutation {
+  """
+  Creates a single-use token that represents a credit card’s details. This token can be used in place of a credit card object with any API method. These tokens can be used only once: by creating a new Charge object, or by attaching them to a Customer object.
+
+  In most cases, you should create tokens client-side using Checkout, Elements, or our mobile libraries, instead of using the API.
+  """
+  createCardToken(data: CardTokenCreateInput!): CardToken
+  createCustomerCardToken(
+    whereAccount: AccountWhereUniqueInput!
+    data: CustomerCardTokenCreateInput!
+  ): CardToken
+  createBankAccountToken(data: BankAccountTokenCreateInput!): BankAccountToken
+  createCustomerBankAccountToken(
+    whereAccount: AccountWhereUniqueInput!
+    data: CustomerBankAccountTokenCreateInput!
+  ): BankAccountToken
+  """
+  Creates a single-use token that represents the details of personally identifiable information (PII). This token can be used in place of an id_number in Account or Person Update API methods. A PII token can be used only once.
+  """
+  createPIIToken(data: PIITokenCreateInput!): PIIToken
+  createAccountToken(data: AccountTokenCreateInput!): AccountToken
+}

@@ -1,0 +1,5 @@
+# imports { Node } from '../Node.graphql'
+
+type Query {
+  node(id: ID!): Node
+}

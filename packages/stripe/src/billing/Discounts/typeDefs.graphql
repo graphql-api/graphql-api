@@ -1,0 +1,54 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import Directives from '../../Directives.graphql'
+# import { Customer, CustomerWhereUniqueInput } from '../../core/Customers/typeDefs.graphql'
+# import { BillingSubscriptionWhereUniqueInput } from '../Subscriptions/typeDefs.graphql'
+# import { Coupon } from '../Coupons/typeDefs.graphql'
+
+type Discount implements Object {
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  """
+  Hash describing the coupon applied to create this discount.
+  """
+  coupon: Coupon
+  customer: Customer @expandable
+  """
+  If the coupon has a duration of repeating, the date that this discount will end. If the coupon has a duration of once or forever, this attribute will be null.
+  """
+  end: DateTime
+  """
+  Date that the coupon was applied.
+  """
+  start: DateTime
+  """
+  The subscription that this coupon is applied to, if it is applied to a particular subscription.
+  """
+  subscription: String
+}
+
+"""
+An object with a deleted flag set to true upon success. This call returns an error otherwise, such as if no discount exists on this customer or subscription.
+"""
+type DiscountDeletePayload {
+  object: ObjectType
+  deleted: Boolean
+}
+
+type Mutation {
+  """
+  Removes the currently applied discount on a customer.
+  """
+  deleteCustomerDiscount(
+    whereCustomer: CustomerWhereUniqueInput!
+  ): DiscountDeletePayload
+  """
+  Removes the currently applied discount on a subscription.
+  """
+  deleteSubscriptionDiscount(
+    whereSubscription: BillingSubscriptionWhereUniqueInput!
+  ): DiscountDeletePayload
+}

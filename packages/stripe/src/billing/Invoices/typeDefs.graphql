@@ -1,0 +1,1045 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { Customer } from '../../core/Customers/typeDefs.graphql'
+# import { Discount } from '../Discounts/typeDefs.graphql'
+# import { Source } from '../../payment/Sources/typeDefs.graphql'
+# import { Plan } from '../Plans/typeDefs.graphql'
+# import { BillingSubscription } from '../Subscriptions/typeDefs.graphql'
+# import Directives from '../../Directives.graphql'
+# import { Charge } from '../../core/Charges/typeDefs.graphql'
+# import { CreatedInput } from '../../Created.graphql'
+# import { PeriodInput } from '../InvoiceItems/typeDefs.graphql'
+
+"""
+Invoices are statements of amounts owed by a customer, and are either generated one-off, or generated periodically from a subscription.
+
+They contain invoice items, and proration adjustments that may be caused by subscription upgrades/downgrades (if necessary).
+
+If your invoice is configured to be billed through automatic charges, Stripe automatically finalizes your invoice and attempts payment. Note that finalizing the invoice, when automatic, does not happen immediately as the invoice is created. Stripe waits until one hour after the last webhook was successfully sent (or the last webhook timed out after failing). If you (and the platforms you may have connected to) have no webhooks configured, Stripe waits one hour after creation to finalize the invoice.
+
+If your invoice is configured to be billed by sending an email, then based on your email settings, Stripe will email the invoice to your customer and await payment. These emails can contain a link to a hosted page to pay the invoice.
+
+Stripe applies any customer credit on the account before determining the amount due for the invoice (i.e., the amount that will be actually charged). If the amount due for the invoice is less than Stripe's minimum allowed charge per currency, the invoice is automatically marked paid, and we add the amount due to the customer's running account balance which is applied to the next invoice.
+
+More details on the customer's account balance are here.
+"""
+type Invoice implements Node & Object {
+  """
+  Final amount due at this time for this invoice. If the invoice's total is
+  smaller than the minimum charge amount, for example, or if there is account
+  credit that can be applied to the invoice, the \`amount_due\` may be 0. If there
+  is a positive \`starting_balance\` for the invoice (the customer owes money),
+  the \`amount_due\` will also take that into account. The charge that gets
+  generated for the invoice will be for the amount specified in \`amount_due\`.
+  """
+  amount_due: Int
+
+  """
+  The amount, in %s, that was paid.
+  """
+  amount_paid: Int
+
+  """
+  The amount remaining, in %s, that is due.
+  """
+  amount_remaining: Int
+
+  """
+  The fee in %s that will be applied to the invoice and transferred to the
+  application owner's Stripe account when the invoice is paid.
+  """
+  application_fee_amount: Int
+
+  """
+  Number of payment attempts made for this invoice, from the perspective of the
+  payment retry schedule. Any payment attempt counts as the first attempt, and
+  subsequently only automatic retries increment the attempt count. In other
+  words, manual payment attempts after the first attempt do not affect the retry schedule.
+  """
+  attempt_count: Int
+
+  """
+  Whether an attempt has been made to pay the invoice. An invoice is not
+  attempted until 1 hour after the \`invoice.created\` webhook, for example, so
+  you might not want to display that invoice as unpaid to your users.
+  """
+  attempted: Boolean
+
+  """
+  Controls whether Stripe will perform [automatic
+  collection](https://stripe.com/docs/billing/invoices/workflow/#auto_advance)
+  of the invoice. When \`false\`, the invoice's state will not automatically
+  advance without an explicit action.
+  """
+  auto_advance: Boolean
+
+  """
+  Either \`charge_automatically\`, or \`send_invoice\`. When charging automatically,
+  Stripe will attempt to pay this invoice using the default source attached to
+  the customer. When sending an invoice, Stripe will email this invoice to the
+  customer with payment instructions.
+  """
+  billing: InvoiceBilling
+
+  """
+  Indicates the reason why the invoice was created. \`subscription_cycle\`
+  indicates an invoice created by a subscription advancing into a new period.
+  \`subscription_create\` indicates an invoice created due to creating a
+  subscription. \`subscription_update\` indicates an invoice created due to
+  updating a subscription. \`subscription\` is set for all old invoices to
+  indicate either a change to a subscription or a period advancement. \`manual\`
+  is set for all invoices unrelated to a subscription (for example: created via
+  the invoice editor). The \`upcoming\` value is reserved for simulated invoices
+  per the upcoming invoice endpoint. \`subscription_threshold\` indicates an
+  invoice created due to a billing threshold being reached.
+  """
+  billing_reason: InvoiceBillingReason
+
+  """
+  ID of the latest charge generated for this invoice, if any.
+  """
+  charge: Charge @expandable
+
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+
+  """
+  Three-letter [ISO currency
+  code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+  a [supported currency](https://stripe.com/docs/currencies).
+  """
+  currency: Currency
+
+  """
+  Custom fields displayed on the invoice.
+  """
+  custom_fields: [InvoiceSettingCustomField]
+  customer: Customer @expandable
+
+  """
+  ID of the default payment source for the invoice. It must belong to the
+  customer associated with the invoice and be in a chargeable state. If not set,
+  defaults to the subscription's default source, if any, or to the customer's
+  default source.
+  """
+  default_source: Source @expandable
+
+  """
+  An arbitrary string attached to the object. Often useful for displaying to users. Referenced as 'memo' in the Dashboard.
+  """
+  description: String
+  discount: Discount
+
+  """
+  The date on which payment for this invoice is due. This value will be \`null\`
+  for invoices where \`billing=charge_automatically\`.
+  """
+  due_date: DateTime
+
+  """
+  Ending customer balance after the invoice is finalized. Invoices are finalized
+  approximately an hour after successful webhook delivery or when payment
+  collection is attempted for the invoice. If the invoice has not been finalized
+  yet, this will be null.
+  """
+  ending_balance: Int
+
+  """
+  Footer displayed on the invoice.
+  """
+  footer: String
+
+  """
+  The URL for the hosted invoice page, which allows customers to view and pay an
+  invoice. If the invoice has not been finalized yet, this will be null.
+  """
+  hosted_invoice_url: String
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+
+  """
+  The link to download the PDF for the invoice. If the invoice has not been finalized yet, this will be null.
+  """
+  invoice_pdf: String
+
+  """
+  The individual line items that make up the invoice. \`lines\` is sorted as
+  follows: invoice items in reverse chronological order, followed by the
+  subscription, if any.
+  """
+  lines: LineItemList
+
+  """
+  Has the value \`true\` if the object exists in live mode or the value \`false\` if the object exists in test mode.
+  """
+  livemode: Boolean
+
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful
+  for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+
+  """
+  The time at which payment will next be attempted. This value will be \`null\` for invoices where \`billing=send_invoice\`.
+  """
+  nextPaymentAttempt: Int
+
+  """
+  A unique, identifying string that appears on emails sent to the customer for
+  this invoice. This starts with the customer's unique invoice_prefix if it is specified.
+  """
+  number: String
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+
+  """
+  Whether payment was successfully collected for this invoice. An invoice can be
+  paid (most commonly) with a charge or with credit from the customer's account balance.
+  """
+  paid: Boolean
+
+  """
+  End of the usage period during which invoice items were added to this invoice.
+  """
+  period_end: DateTime
+
+  """
+  Start of the usage period during which invoice items were added to this invoice.
+  """
+  period_start: DateTime
+
+  """
+  This is the transaction number that appears on email receipts sent for this invoice.
+  """
+  receipt_number: String
+
+  """
+  Starting customer balance before the invoice is finalized. If the invoice has
+  not been finalized yet, this will be the current customer balance.
+  """
+  starting_balance: Float
+
+  """
+  Extra information about an invoice for the customer's credit card statement.
+  """
+  statement_descriptor: String
+
+  """
+  The status of the invoice, one of \`draft\`, \`open\`, \`paid\`, \`uncollectible\`, or \`void\`.
+  """
+  status: InvoiceStatus
+  status_transitions: InvoicesStatusTransitions
+
+  """
+  The subscription that this invoice was prepared for, if any.
+  """
+  subscription: BillingSubscription @expandable
+
+  """
+  Only set for upcoming invoices that preview prorations. The time used to calculate prorations.
+  """
+  subscription_proration_date: Int
+
+  """
+  Total of all subscriptions, invoice items, and prorations on the invoice before any discount is applied.
+  """
+  subtotal: Int
+
+  """
+  The amount of tax included in the total, calculated from \`tax_percent\` and the
+  subtotal. If no \`tax_percent\` is defined, this value will be null.
+  """
+  tax: Int
+
+  """
+  This percentage of the subtotal has been added to the total amount of the
+  invoice, including invoice line items and discounts. This field is inherited
+  from the subscription's \`tax_percent\` field, but can be changed before the
+  invoice is paid. This field defaults to null.
+  """
+  tax_percent: Float
+  """
+  If billing_reason is set to subscription_threshold this returns more information on which threshold rules triggered the invoice.
+  """
+  threshold_reason: InvoiceThresholdReason
+
+  """
+  Total after discount.
+  """
+  total: Int
+
+  """
+  The time at which webhooks for this invoice were successfully delivered (if
+  the invoice had no webhooks to deliver, this will match \`created\`). Invoice
+  payment is delayed until webhooks are delivered, or until all webhook delivery
+  attempts have been exhausted.
+  """
+  webhooks_delivered_at: DateTime
+}
+
+enum InvoiceBilling {
+  chargeAutomatically
+  sendInvoice
+}
+
+enum InvoiceBillingReason {
+  automaticPendingInvoiceItemInvoice
+  manual
+  subscription
+  subscriptionCreate
+  subscriptionCycle
+  subscriptionThreshold
+  subscriptionUpdate
+  upcoming
+}
+
+enum InvoiceStatus {
+  deleted
+  draft
+  open
+  paid
+  uncollectible
+  void
+}
+
+type InvoiceThresholdReason {
+  """
+  The total invoice amount threshold boundary if it triggered the threshold invoice.
+  """
+  amount_gte: Int
+
+  """
+  Indicates which line items triggered a threshold invoice.
+  """
+  item_reasons: [InvoiceItemThresholdReason]
+}
+
+type InvoiceItemThresholdReason {
+  """
+  The IDs of the line items that triggered the threshold invoice.
+  """
+  line_item_ids: [ID]
+
+  """
+  The quantity threshold boundary that applied to the given line item.
+  """
+  usage_gte: Int
+}
+
+type InvoiceSettingCustomField {
+  """
+  The name of the custom field.
+  """
+  name: String
+
+  """
+  The value of the custom field.
+  """
+  value: String
+}
+
+type InvoicesStatusTransitions {
+  """
+  The time that the invoice draft was finalized.
+  """
+  finalized_at: DateTime
+
+  """
+  The time that the invoice was marked uncollectible.
+  """
+  marked_uncollectible_at: DateTime
+
+  """
+  The time that the invoice was paid.
+  """
+  paid_at: DateTime
+
+  """
+  The time that the invoice was voided.
+  """
+  voided_at: DateTime
+}
+
+"""
+The individual line items that make up the invoice. \`lines\` is sorted as
+follows: invoice items in reverse chronological order, followed by the
+subscription, if any.
+"""
+type LineItemList implements Object {
+  data: [LineItem]
+
+  """
+  True if this list has another page of items after this one that can be fetched.
+  """
+  has_more: Boolean
+
+  """
+  String representing the object's type. Objects of the same type share the same value. Always has the value \`list\`.
+  """
+  object: ObjectType
+
+  """
+  The URL where this list can be accessed.
+  """
+  url: String
+}
+
+type LineItem implements Node & Object {
+  """
+  The amount, in %s.
+  """
+  amount: Float
+
+  """
+  Three-letter [ISO currency
+  code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+  a [supported currency](https://stripe.com/docs/currencies).
+  """
+  currency: Currency
+
+  """
+  An arbitrary string attached to the object. Often useful for displaying to users.
+  """
+  description: String
+
+  """
+  If true, discounts will apply to this line item. Always false for prorations.
+  """
+  discountable: Boolean
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  invoiceItem: String
+
+  """
+  Whether this is a test line item.
+  """
+  livemode: Boolean
+
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful
+  for storing additional information about the object in a structured format.
+  Note that for line items with \`type=subscription\` this will reflect the
+  metadata of the subscription that caused the line item to be created.
+  """
+  metadata: JSON
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  period: InvoiceLineItemPeriod
+
+  """
+  The plan of the subscription, if the line item is a subscription or a proration.
+  """
+  plan: Plan
+
+  """
+  Whether this is a proration.
+  """
+  proration: Boolean
+
+  """
+  The quantity of the subscription, if the line item is a subscription or a proration.
+  """
+  quantity: Int
+
+  """
+  The subscription that the invoice item pertains to, if any.
+  """
+  subscription: String
+
+  """
+  The subscription item that generated this invoice item. Left empty if the line
+  item is not an explicit result of a subscription.
+  """
+  subscription_item: String
+
+  """
+  A string identifying the type of the source of this line item, either an \`invoiceitem\` or a \`subscription\`.
+  """
+  type: InvoiceType
+}
+
+enum InvoiceType {
+  invoiceitem
+  subscription
+}
+
+type InvoiceLineItemPeriod {
+  """
+  End of the line item's billing period
+  """
+  end: Int
+
+  """
+  Start of the line item's billing period
+  """
+  start: Int
+}
+
+input InvoiceWhereUniqueInput {
+  invoice: ID!
+}
+
+input InvoiceLineItemsWhereInput {
+  invoice: ID!
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(max: 100)
+  """
+  A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+  """
+  starting_after: ID
+}
+
+# input UpcomingInvoiceWhereInput {
+#   """If provided, the invoice returned will preview updating or creating a subscription with that trial end. If set, one of subscription_items or subscription is required."""
+#   subscription_trial_end: DateTime
+#   """Indicates if a plan’s trial_period_days should be applied to the subscription. Setting subscription_trial_end per subscription is preferred, and this defaults to false. Setting this flag to true together with subscription_trial_end is not allowed."""
+#   subscription_trial_from_plan: Boolean
+# }
+
+input InvoiceCreateInput {
+  customer: ID!
+  """
+  A fee in %s that will be applied to the invoice and transferred to the
+  application owner's Stripe account. The request must be made with an OAuth key
+  or the Stripe-Account header in order to take an application fee. For more
+  information, see the application fees
+  [documentation](https://stripe.com/docs/connect/subscriptions#invoices).
+  """
+  application_fee_amount: Int
+
+  """
+  Controls whether Stripe will perform [automatic
+  collection](https://stripe.com/docs/billing/invoices/workflow/#auto_advance)
+  of the invoice. When \`false\`, the invoice's state will not automatically
+  advance without an explicit action.
+  """
+  auto_advance: Boolean
+
+  """
+  Either \`charge_automatically\`, or \`send_invoice\`. When charging automatically,
+  Stripe will attempt to pay this invoice using the default source attached to
+  the customer. When sending an invoice, Stripe will email this invoice to the
+  customer with payment instructions. Defaults to \`charge_automatically\`.
+  """
+  billing: InvoiceBilling
+
+  """
+  A list of up to 4 custom fields to be displayed on the invoice.
+  """
+  custom_fields: [InvoiceSettingCustomFieldInput]
+
+  """
+  The number of days from when the invoice is created until it is due. Valid only for invoices where \`billing=send_invoice\`.
+  """
+  days_until_due: Int
+
+  """
+  ID of the default payment source for the invoice. It must belong to the
+  customer associated with the invoice and be in a chargeable state. If not set,
+  defaults to the subscription's default source, if any, or to the customer's
+  default source.
+  """
+  default_source: ID
+  description: String
+
+  """
+  The date on which payment for this invoice is due. Valid only for invoices where \`billing=send_invoice\`.
+  """
+  due_date: DateTime
+
+  """
+  Footer to be displayed on the invoice.
+  """
+  footer: String
+  metadata: JSON
+
+  """
+  Extra information about a charge for the customer's credit card statement. It
+  must contain at least one letter. If not specified and this invoice is part of
+  a subscription, the default \`statement_descriptor\` will be set to the first
+  subscription item's product's \`statement_descriptor\`.
+  """
+  statement_descriptor: String
+
+  """
+  The ID of the subscription to invoice, if any. If not set, the created invoice
+  will include all pending invoice items for the customer. If set, the created
+  invoice will exclude pending invoice items that pertain to other
+  subscriptions. The subscription's billing cycle and regular subscription
+  events won't be affected.
+  """
+  subscription: ID
+
+  """
+  The percent tax rate applied to the invoice, represented as a decimal number.
+  """
+  tax_percent: Float
+}
+
+input InvoiceSettingCustomFieldInput {
+  """
+  The name of the custom field.
+  """
+  name: String!
+
+  """
+  The value of the custom field.
+  """
+  value: String!
+}
+
+input InvoicesListWhereInput {
+  """
+  The billing mode of the invoice to retrieve. Either \`charge_automatically\` or \`send_invoice\`.
+  """
+  billing: InvoiceBilling
+  created: DateTime
+
+  """
+  Only return invoices for the customer specified by this customer ID.
+  """
+  customer: ID
+  due_date: CreatedInput
+
+  """
+  A cursor for use in pagination. \`ending_before\` is an object ID that defines
+  your place in the list. For instance, if you make a list request and receive
+  100 objects, starting with \`obj_bar\`, your subsequent call can include
+  \`ending_before=obj_bar\` in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(max: 100)
+
+  """
+  A cursor for use in pagination. \`starting_after\` is an object ID that
+  defines your place in the list. For instance, if you make a list request and
+  receive 100 objects, ending with \`obj_foo\`, your subsequent call can include
+  \`starting_after=obj_foo\` in order to fetch the next page of the list.
+  """
+  starting_after: ID
+
+  """
+  Only return invoices for the subscription specified by this subscription ID.
+  """
+  subscription: ID
+}
+
+input InvoiceUpdateInput {
+  """
+  A fee in %s that will be applied to the invoice and transferred to the
+  application owner's Stripe account. The request must be made with an OAuth key
+  or the Stripe-Account header in order to take an application fee. For more
+  information, see the application fees
+  [documentation](https://stripe.com/docs/connect/subscriptions#invoices).
+  """
+  application_fee_amount: Int
+
+  """
+  Controls whether Stripe will perform [automatic
+  collection](https://stripe.com/docs/billing/invoices/workflow/#auto_advance)
+  of the invoice.
+  """
+  auto_advance: Boolean
+
+  """
+  A list of up to 4 custom fields to be displayed on the invoice. If a value for
+  \`custom_fields\` is specified, the list specified will replace the existing
+  custom field list on this invoice.
+  """
+  custom_fields: [InvoiceSettingCustomFieldInput]
+
+  """
+  The number of days from which the invoice is created until it is due. Only
+  valid for invoices where \`billing=send_invoice\`. This field can only be
+  updated on \`draft\` invoices.
+  """
+  days_until_due: Int
+
+  """
+  ID of the default payment source for the invoice. It must belong to the
+  customer associated with the invoice and be in a chargeable state. If not set,
+  defaults to the subscription's default source, if any, or to the customer's
+  default source.
+  """
+  default_source: ID
+  description: String
+
+  """
+  The date on which payment for this invoice is due. Only valid for invoices
+  where \`billing=send_invoice\`. This field can only be updated on \`draft\` invoices.
+  """
+  due_date: DateTime
+
+  """
+  Footer to be displayed on the invoice.
+  """
+  footer: String
+  metadata: JSON
+
+  """
+  Extra information about a charge for the customer's credit card statement. It
+  must contain at least one letter. If not specified and this invoice is part of
+  a subscription, the default \`statement_descriptor\` will be set to the first
+  subscription item's product's \`statement_descriptor\`.
+  """
+  statement_descriptor: String
+
+  """
+  The percent tax rate applied to the invoice, represented as a non-negative
+  decimal number (with at most four decimal places) between 0 and 100. To unset
+  a previously-set value, pass an empty string. This field can be updated only
+  on \`draft\` invoices.
+  """
+  tax_percent: Float @constraint(max: 100)
+}
+
+type InvoiceDeletePayload implements Object {
+  object: ObjectType
+  deleted: Boolean
+}
+
+input InvoiceFinalizeInput {
+  """
+  Controls whether Stripe will perform automatic collection of the invoice. When false, the invoice’s state will not automatically advance without an explicit action.
+  """
+  auto_advance: Boolean
+}
+
+input InvoicePayInput {
+  """
+  In cases where the source used to pay the invoice has insufficient funds,
+  passing \`forgive=true\` controls whether a charge should be attempted for the
+  full amount available on the source, up to the amount to fully pay the
+  invoice. This effectively forgives the difference between the amount available
+  on the source and the amount due.
+
+  Passing \`forgive=false\` will fail the charge if the source hasn't been
+  pre-funded with the right amount. An example for this case is with ACH Credit
+  Transfers and wires: if the amount wired is less than the amount due by a
+  small amount, you might want to forgive the difference.
+  """
+  forgive: Boolean
+
+  """
+  Boolean representing whether an invoice is paid outside of Stripe. This will result in no charge being made.
+  """
+  paid_out_of_band: Boolean
+
+  """
+  A payment source to be charged. The source must be the ID of a source
+  belonging to the customer associated with the invoice being paid.
+  """
+  source: ID
+}
+input UpcomingInvoiceLineItemsWhereInput {
+  """
+  The code of the coupon to apply. If subscription or subscription_items is provided, the invoice returned will preview updating or creating a subscription with that coupon. Otherwise, it will preview applying that coupon to the customer for the next upcoming invoice from among the customer’s subscriptions. The invoice can be previewed without a coupon by passing this value as an empty string.
+  """
+  coupon: ID
+  """
+  REQUIRED IF SUBSCRIPTION UNSET
+
+  The identifier of the customer whose upcoming invoice you’d like to retrieve.
+  """
+  customer: ID!
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines
+  your place in the list. For instance, if you make a list request and receive
+  100 objects, starting with obj_bar, your subsequent call can include
+  ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  endingBefore: ID
+  """
+  List of invoice items to add or update in the upcoming invoice preview.
+  """
+  invoice_items: UpcomingInvoiceWhereInvoiceItemInput
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(exclusiveMin: 1, max: 100)
+  """
+  A cursor for use in pagination. starting_after is an object ID that
+  defines your place in the list. For instance, if you make a list request and
+  receive 100 objects, ending with [obj_foo], your subsequent call can include
+  [starting_after=obj_foo] in order to fetch the next page of the list.
+  """
+  startingAfter: ID
+  """
+  The identifier of the subscription for which you’d like to retrieve the upcoming invoice. If not provided, but a subscription_items is provided, you will preview creating a subscription with those items. If neither subscription nor subscription_items is provided, you will retrieve the next upcoming invoice from among the customer’s subscriptions.
+  """
+  subscription: ID
+  """
+  For new subscriptions, a future timestamp to anchor the subscription’s billing cycle. This is used to determine the date of the first full invoice, and, for plans with month or year intervals, the day of the month for subsequent invoices. For existing subscriptions, the value can only be set to now or unchanged.
+  """
+  subscription_billing_cycle_anchor: DateTime
+  """
+  Boolean indicating whether this subscription should cancel at the end of the current period.
+  """
+  subscription_cancel_at_period_end: Boolean
+  subscription_cancel_now: Boolean
+  """
+  List of subscription items, each with an attached plan.
+  """
+  subscription_items: SubscriptionItemsInput
+  """
+  If previewing an update to a subscription, this decides whether the preview will show the result of applying prorations or not. If set, one of subscription_items or subscription, and one of subscription_items or subscription_trial_end are required.
+  """
+  subscription_prorate: Boolean
+  """
+  If previewing an update to a subscription, and doing proration, subscription_proration_date forces the proration to be calculated as though the update was done at the specified time. The time given must be within the current subscription period, and cannot be before the subscription was on its current plan. If set, subscription, and one of subscription_items, or subscription_trial_end are required. Also, subscription_proration cannot be set to false.
+  """
+  subscription_proration_date: DateTime
+
+  """
+  If provided, the invoice returned will preview updating or creating a
+  subscription with that tax percent. If set, one of \`subscription_items\` or
+  \`subscription\` is required.
+  """
+  subscription_tax_percent: Float @constraint(max: 100)
+
+  """
+  If provided, the invoice returned will preview updating or creating a
+  subscription with that trial end. If set, one of \`subscription_items\` or
+  \`subscription\` is required.
+  """
+  subscription_trial_end: String
+
+  """
+  Indicates if a plan's \`trial_period_days\` should be applied to the
+  subscription. Setting \`subscription_trial_end\` per subscription is
+  preferred, and this defaults to \`false\`. Setting this flag to \`true\`
+  together with \`subscription_trial_end\` is not allowed.
+  """
+  subscription_trial_from_plan: Boolean
+}
+input UpcomingInvoiceWhereInput {
+  """
+  The code of the coupon to apply. If subscription or subscription_items is provided, the invoice returned will preview updating or creating a subscription with that coupon. Otherwise, it will preview applying that coupon to the customer for the next upcoming invoice from among the customer’s subscriptions. The invoice can be previewed without a coupon by passing this value as an empty string.
+  """
+  coupon: ID
+  """
+  REQUIRED IF SUBSCRIPTION UNSET
+
+  The identifier of the customer whose upcoming invoice you’d like to retrieve.
+  """
+  customer: ID
+  """
+  List of invoice items to add or update in the upcoming invoice preview.
+  """
+  invoice_items: UpcomingInvoiceWhereInvoiceItemInput
+  """
+  The identifier of the subscription for which you’d like to retrieve the upcoming invoice. If not provided, but a subscription_items is provided, you will preview creating a subscription with those items. If neither subscription nor subscription_items is provided, you will retrieve the next upcoming invoice from among the customer’s subscriptions.
+  """
+  subscription: ID
+  """
+  For new subscriptions, a future timestamp to anchor the subscription’s billing cycle. This is used to determine the date of the first full invoice, and, for plans with month or year intervals, the day of the month for subsequent invoices. For existing subscriptions, the value can only be set to now or unchanged.
+  """
+  subscription_billing_cycle_anchor: DateTime
+  """
+  Boolean indicating whether this subscription should cancel at the end of the current period.
+  """
+  subscription_cancel_at_period_end: Boolean
+  subscription_cancel_now: Boolean
+  """
+  List of subscription items, each with an attached plan.
+  """
+  subscription_items: SubscriptionItemsInput
+  """
+  If previewing an update to a subscription, this decides whether the preview will show the result of applying prorations or not. If set, one of subscription_items or subscription, and one of subscription_items or subscription_trial_end are required.
+  """
+  subscription_prorate: Boolean
+  """
+  If previewing an update to a subscription, and doing proration, subscription_proration_date forces the proration to be calculated as though the update was done at the specified time. The time given must be within the current subscription period, and cannot be before the subscription was on its current plan. If set, subscription, and one of subscription_items, or subscription_trial_end are required. Also, subscription_proration cannot be set to false.
+  """
+  subscription_proration_date: DateTime
+
+  """
+  If provided, the invoice returned will preview updating or creating a
+  subscription with that tax percent. If set, one of \`subscription_items\` or
+  \`subscription\` is required.
+  """
+  subscription_tax_percent: Float @constraint(max: 100)
+
+  """
+  If provided, the invoice returned will preview updating or creating a
+  subscription with that trial end. If set, one of \`subscription_items\` or
+  \`subscription\` is required.
+  """
+  subscription_trial_end: String
+
+  """
+  Indicates if a plan's \`trial_period_days\` should be applied to the
+  subscription. Setting \`subscription_trial_end\` per subscription is
+  preferred, and this defaults to \`false\`. Setting this flag to \`true\`
+  together with \`subscription_trial_end\` is not allowed.
+  """
+  subscription_trial_from_plan: Boolean
+}
+
+input UpcomingInvoiceWhereInvoiceItemInput {
+  """
+  The integer amount in cents of previewed invoice item.
+  """
+  amount: Int
+  """
+  Three-letter ISO currency code, in lowercase. Must be a supported currency. Only applicable to new invoice items.
+  """
+  currency: Currency
+  """
+  An arbitrary string which you can attach to the invoice item. The description is displayed in the invoice for easy tracking. This can be unset by updating the value to null and then saving.
+  """
+  description: String
+  """
+  Explicitly controls whether discounts apply to this invoice item. Defaults to true, except for negative invoice items.
+  """
+  discountable: Boolean
+  """
+  The ID of the invoice item to update in preview. If not specified, a new invoice item will be added to the preview of the upcoming invoice.
+  """
+  invoiceitem: ID
+  """
+  A set of key-value pairs that you can attach to an invoice item object. It can be useful for storing additional information about the invoice item in a structured format.
+  """
+  metadata: JSON
+  period: PeriodInput
+  """
+  Non-negative integer. The quantity of units for the invoice item.
+  """
+  quantity: Int @constraint(min: 1)
+  """
+  The integer unit amount in cents of the charge to be applied to the upcoming invoice. This unit_amount will be multiplied by the quantity to get the full amount. If you want to apply a credit to the customer’s account, pass a negative unit_amount.
+  """
+  unit_amount: Int
+}
+
+"""
+List of subscription items, each with an attached plan.
+"""
+input SubscriptionItemsInput {
+  """
+  Define thresholds at which an invoice will be sent, and the subscription advanced to a new billing period
+  """
+  billing_thresholds: BillingThresholds
+  """
+  Delete all usage for a given subscription item. Allowed only when deleted is set to true and the current plan’s usage_type is metered.
+  """
+  clear_usage: Boolean
+  """
+  A flag that, if set to true, will delete the specified item.
+  """
+  deleted: Boolean
+  """
+  Subscription item to update.
+  """
+  id: ID
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+  """
+  Plan ID for this item, as a string.
+  """
+  plan: ID
+  """
+  Quantity for this item.
+  """
+  quantity: Int
+}
+
+input BillingThresholds {
+  """
+  Usage threshold that triggers the subscription to advance to a new billing period
+  """
+  usage_gte: Int
+}
+
+type InvoiceList implements Object {
+  object: ObjectType
+  has_more: Boolean
+  url: String
+  data: [Invoice]
+}
+
+type LineItemList implements Object {
+  object: ObjectType
+  has_more: Boolean
+  url: String
+  data: [LineItem]
+}
+
+type Query {
+  """
+  When retrieving an invoice, you’ll get a lines property containing the total count of line items and the first handful of those items. There is also a URL where you can retrieve the full (paginated) list of line items.
+  """
+  retrieveInvoice(where: InvoiceWhereUniqueInput!): Invoice
+  retrieveInvoiceLineItem(where: InvoiceLineItemsWhereInput!): LineItem
+  """
+  At any time, you can preview the upcoming invoice for a customer. This will show you all the charges that are pending, including subscription renewal charges, invoice item charges, etc. It will also show you any discount that is applicable to the customer.
+
+  Note that when you are viewing an upcoming invoice, you are simply viewing a preview – the invoice has not yet been created. As such, the upcoming invoice will not show up in invoice listing calls, and you cannot use the API to pay or edit the invoice. If you want to change the amount that your customer will be billed, you can add, remove, or update pending invoice items, or update the customer’s discount.
+
+  You can preview the effects of updating a subscription, including a preview of what proration will take place. To ensure that the actual proration is calculated exactly the same as the previewed proration, you should pass a proration_date parameter when doing the actual subscription update. The value passed in should be the same as the subscription_proration_date returned on the upcoming invoice resource. The recommended way to get only the prorations being previewed is to consider only proration line items where period[start] is equal to the subscription_proration_date on the upcoming invoice resource.
+  """
+  retrieveUpcomingInvoice(where: UpcomingInvoiceWhereInput!): Invoice
+  """
+  When retrieving an upcoming invoice, you’ll get a lines property containing the total count of line items and the first handful of those items. There is also a URL where you can retrieve the full (paginated) list of line items.
+  """
+  retrieveUpcomingInvoiceLineItems(
+    where: UpcomingInvoiceLineItemsWhereInput!
+  ): LineItemList
+  listInvoices(where: InvoicesListWhereInput): InvoiceList
+}
+
+type Mutation {
+  createInvoice(data: InvoiceCreateInput!): Invoice
+  """
+  Draft invoices are fully editable. Once an invoice is finalized, monetary values, as well as billing, become uneditable.
+
+  If you would like to stop the Stripe Billing engine from automatically finalizing, reattempting payments on, sending reminders for, or automatically reconciling invoices, pass auto_advance=false.
+  """
+  updateInvoice(
+    where: InvoiceWhereUniqueInput!
+    data: InvoiceUpdateInput!
+  ): Invoice
+
+  deleteDraftInvoice(where: InvoiceWhereUniqueInput!): InvoiceDeletePayload
+
+  finalizeInvoice(
+    where: InvoiceWhereUniqueInput!
+    data: InvoiceFinalizeInput
+  ): Invoice
+
+  payInvoice(where: InvoiceWhereUniqueInput!, data: InvoicePayInput!): Invoice
+
+  sendInvoice(where: InvoiceWhereUniqueInput!): Invoice
+
+  voidInvoice(where: InvoiceWhereUniqueInput!): Invoice
+
+  markInvoiceUncollectible(where: InvoiceWhereUniqueInput!): Invoice
+}

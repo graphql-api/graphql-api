@@ -1,0 +1,132 @@
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { BillingSubscriptionItemWhereUniqueInput } from '../SubscriptionItems/typeDefs.graphql'
+# import { Period } from '../../Period.graphql'
+
+"""
+Usage records allow you to report customer usage and metrics to Stripe for metered billing of subscription plans.
+"""
+type UsageRecord implements Node & Object {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+
+  """
+  Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
+  """
+  livemode: Boolean
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+
+  """
+  The usage quantity for the specified date.
+  """
+  quantity: Int
+
+  """
+  The ID of the subscription item this usage record contains data for.
+  """
+  subscription_item: ID
+
+  """
+  The timestamp when this usage occurred.
+  """
+  timestamp: DateTime
+}
+
+type UsageRecordSummary implements Node & Object {
+  id: ID!
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  invoice: ID
+  livemode: Boolean
+  period: Period
+  """
+  The ID of the subscription item this summary is describing.
+  """
+  subscriptionItem: ID
+  """
+  The total usage within this usage period.
+  """
+  total_usage: Int
+}
+
+input UsageRecordCreateInput {
+  """
+  The usage quantity for the specified timestamp.
+  """
+  quantity: Int!
+  """
+  The timestamp for the usage event. This timestamp must be within the current billing period of the subscription of the provided subscription_item.
+  """
+  timestamp: DateTime!
+  """
+  Valid values are increment (default) or set. When using increment the specified quantity will be added to the usage at the specified timestamp. The set action will overwrite the usage quantity at that timestamp. If the subscription has billing thresholds, increment is the only allowed value.
+  """
+  action: UsageRecordAction
+}
+
+enum UsageRecordAction {
+  increment
+  set
+}
+
+input UsageRecordWhereInput {
+  """
+  Only summary items for the given subscription item.
+  """
+  subscription_item: ID!
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(max: 100)
+  """
+  A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+  """
+  starting_after: ID
+}
+
+type UsageRecordList implements Object {
+  object: ObjectType
+  has_more: Boolean
+  url: String
+  data: [UsageRecordSummary]
+}
+
+type Query {
+  """
+  For the specified subscription item, returns a list of summary objects. Each object in the list provides usage information that’s been summarized from multiple usage records and over a subscription billing period (e.g., 15 usage records in the billing plan’s month of September).
+
+  The list is sorted in reverse-chronological order (newest first). The first list item represents the most current usage period that hasn’t ended yet. Since new usage records can still be added, the returned summary information for the subscription item’s ID should be seen as unstable until the subscription billing period ends.
+  """
+  listSubscriptionItemPeriodSummaries(
+    where: UsageRecordWhereInput!
+  ): UsageRecordList
+}
+
+type Mutation {
+  """
+  Creates a usage record for a specified subscription item and date, and fills it with a quantity.
+
+  Usage records provide quantity information that Stripe uses to track how much a customer is using your service. With usage information and the pricing model set up by the metered billing plan, Stripe helps you send accurate invoices to your customers.
+
+  The default calculation for usage is to add up all the quantity values of the usage records within a billing period. You can change this default behavior with the billing plan’s aggregate_usage parameter. When there is more than one usage record with the same timestamp, Stripe adds the quantity values together. In most cases, this is the desired resolution, however, you can change this behavior with the action parameter.
+
+  The default pricing model for metered billing is per-unit pricing. For finer granularity, you can configure metered billing to have a tiered pricing model.
+  """
+  createUsageRecord(
+    where: BillingSubscriptionItemWhereUniqueInput!
+    data: UsageRecordCreateInput!
+  ): UsageRecord
+}

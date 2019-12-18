@@ -1,0 +1,11 @@
+# import { Node } from '../Node.graphql'
+# import { Object, ObjectType } from '../Object.graphql'
+
+type Application implements Node & ObjectType {
+  object: ObjectType
+  """
+  String representing the application’s name.
+  """
+  name: String
+  id: ID!
+}

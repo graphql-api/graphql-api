@@ -1,0 +1,40 @@
+type PackageDimensions {
+  """
+  Height, in inches.
+  """
+  height: Float
+  """
+  Length, in inches.
+  """
+  length: Float
+  """
+  Weight, in ounces.
+  """
+  weight: Float
+  """
+  Width, in inches.
+  """
+  width: Float
+}
+
+input PackageDimensionsInput {
+  """
+  Height, in inches.
+  """
+  height: Float
+  """
+  Length, in inches.
+  """
+  length: Float
+  """
+  Weight, in ounces.
+  """
+  weight: Float
+  """
+  Width, in inches.
+  """
+  width: Float
+}
+
+
+

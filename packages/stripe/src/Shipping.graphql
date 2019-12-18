@@ -1,0 +1,107 @@
+# import { Address, AddressInput } from './Address.graphql'
+# import { Currency } from './Currency.graphql'
+# import { Date } from './Scalars.graphql'
+
+type Shipping {
+  """
+  Shipping address.
+  """
+  address: Address
+  """
+  Recipient name.
+  """
+  name: String!
+  """
+  The delivery service that shipped a physical product, such as Fedex, UPS, USPS, etc.
+  """
+  carrier: String
+  """
+  Recipient phone (including extension).
+  """
+  phone: String
+  """
+  The tracking number for a physical product, obtained from the delivery service. If multiple tracking numbers were generated for this purchase, please separate them with commas.
+  """
+  tracking_number: String
+}
+
+"""
+Shipping information for the charge. Helps prevent fraud on charges for physical goods.
+"""
+input ShippingInput {
+  """
+  Shipping address.
+  """
+  address: AddressInput!
+  """
+  Recipient name. This can be unset by updating the value to null and then saving.
+  """
+  name: String!
+  """
+  The delivery service that shipped a physical product, such as Fedex, UPS, USPS, etc. This can be unset by updating the value to null and then saving.
+  """
+  carrier: String
+  """
+  Recipient phone (including extension). This can be unset by updating the value to null and then saving.
+  """
+  phone: String
+  """
+  The tracking number for a physical product, obtained from the delivery service. If multiple tracking numbers were generated for this purchase, please separate them with commas. This can be unset by updating the value to null and then saving.
+  """
+  tracking_number: String
+}
+
+type ShippingMethod implements Node {
+  """
+  A positive integer in the smallest currency unit (that is, 100 cents for
+  $1.00, or 1 for ¥1, Japanese Yen being a zero-decimal currency) representing
+  the total amount for the line item.
+  """
+  amount: Float
+
+  """
+  Three-letter [ISO currency
+  code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+  a [supported currency](https://stripe.com/docs/currencies).
+  """
+  currency: Currency
+
+  """
+  The estimated delivery date for the given shipping method. Can be either a specific date or a range.
+  """
+  delivery_estimate: DeliveryEstimate
+
+  """
+  An arbitrary string attached to the object. Often useful for displaying to users.
+  """
+  description: String
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+}
+
+type DeliveryEstimate {
+  """
+  If type is "exact", date will be the expected delivery date in the format YYYY-MM-DD.
+  """
+  date: Date
+  """
+  If type is "range", earliest will be be the earliest delivery date in the format YYYY-MM-DD.
+  """
+  earliest: Date
+  """
+  If type is "range", latest will be the latest delivery date in the format YYYY-MM-DD.
+  """
+  latest: Date
+  """
+  The type of estimate. Must be either "range" or "exact".
+  """
+  type: DeliveryEstimateType
+}
+
+enum DeliveryEstimateType {
+  range
+  exact
+}

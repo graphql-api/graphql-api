@@ -1,0 +1,256 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import Directives from '../../Directives.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { CreatedInput } from '../../Created.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Application } from '../../connect/Application.graphql'
+
+
+type SourceTypes {
+  """
+  Amount for bank account.
+  """
+  bank_account: Float
+  #bitcoin_receiver: Int
+  """
+  Amount for card.
+  """
+  card: Float
+}
+
+"""
+https://stripe.com/docs/api/balance
+"""
+type Fund {
+  """
+  Balance amount.
+  """
+  amount: Float
+  """
+  Three-letter [ISO currency
+  code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+  a [supported currency](https://stripe.com/docs/currencies).
+  """
+  currency: Currency
+  """
+  Breakdown of balance by source types.
+  """
+  source_types: SourceTypes
+}
+
+"""
+https://stripe.com/docs/api/balance
+"""
+type Balance implements Object {
+  """
+  Funds that are available to be transferred or paid out, whether automatically by Stripe or explicitly via the [Transfers API](#transfers) or [Payouts API](#payouts). The available balance for each currency and payment type can be found in the `source_types` property.
+  """
+  available: [Fund]
+  """
+  Funds held due to negative balances on connected Custom accounts. The connect reserve balance for each currency and payment type can be found in the source_types property.
+  """
+  connect_reserverd: [Fund]
+  """
+  Has the value true if the object exists in live mode or the value false if the object exists in test mode.
+  """
+  livemode: Boolean
+  """
+  Funds that are not yet available in the balance, due to the 7-day rolling pay cycle. The pending balance for each currency, and for each payment type, can be found in the source_types property.
+  """
+  pending: [Fund]
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+}
+
+enum FeeDetailType {
+  APPLICATION_FEE
+  STRIPE_FEE
+  TAX
+}
+
+type FeeDetail {
+  id: ID
+  amount: Int
+  application: String
+  currency: Currency
+  description: String
+  type: FeeDetailType
+}
+
+"""
+https://stripe.com/docs/api/balance/balance_transaction
+"""
+type BalanceTransaction implements Node & Object {
+  id: ID!
+  amount: Int
+  available_on: DateTime
+  created: DateTime
+  currency: Currency
+  description: String
+  exchange_rate: Float
+  """
+  Fees (in cents) paid for this transaction.
+  """
+  fee: Int
+  """
+  Detailed breakdown of fees (in cents) paid for this transaction.
+  """
+  fee_details: [FeeDetail]
+  """
+  Net amount of the transaction, in cents.
+  """
+  net: Int
+  object: ObjectType
+  """
+  The Stripe object to which this transaction is related.
+  """
+  source: ObjectType @expandable
+  """
+  If the transaction’s net funds are available in the Stripe balance yet. Either available or pending.
+  """
+  status: BalanceTransactionStatus
+  """
+  https://stripe.com/docs/reporting/balance-transaction-types
+
+  Transaction type: `adjustment`, `advance`, `advance_funding`,
+  `application_fee`, `application_fee_refund`, `charge`,
+  `connect_collection_transfer`, `issuing_authorization_hold`,
+  `issuing_authorization_release`, `issuing_transaction`, `payment`,
+  `payment_failure_refund`, `payment_refund`, `payout`, `payout_cancel`,
+  `payout_failure`, `refund`, `refund_failure`, `reserve_transaction`,
+  `reserved_funds`, `stripe_fee`, `stripe_fx_fee`, `tax_fee`, `topup`,
+  `topup_reversal`, `transfer`, `transfer_cancel`, `transfer_failure`, or
+  `transfer_refund`. [Learn
+  more](https://stripe.com/docs/reporting/balance-transaction-types) about
+  balance transaction types and what they represent.
+  """
+  type: BalanceTransactionType
+}
+
+enum BalanceTransactionStatus {
+  AVAILABLE
+  PENDING
+}
+
+"""
+https://stripe.com/docs/reporting/balance-transaction-types
+"""
+enum AdvancedBalanceTransactionType {
+  ADJUSTMENT
+  ADVANCE
+  ADVANCE_FUNDING
+  APPLICATION_FEE
+  APPLICATION_FEE_REFUND
+  CHARGE
+  CONNECT_COLLECTION_TRANSFER
+  ISSUING_AUTHORIZATION_HOLD
+  ISSUING_AUTHORIZATION_RELEASE
+  ISSUING_TRANSACTION
+  PAYMENT
+  PAYMENT_FAILURE_REFUND
+  PAYMENT_REFUND
+  PAYOUT
+  PAYOUT_CANCEL
+  PAYOUT_FAILURE
+  REFUND
+  REFUND_FAILURE
+  RESERVE_TRANSACTION
+  RESERVED_FUNDS
+  STRIPE_FEE
+  STRIPE_FX_FEE
+  TAX_FEE
+  TOPUP
+  TOPUP_REVERSAL
+  TRANSFER
+  TRANSFER_CANCEL
+  TRANSFER_FAILURE
+  TRANSFER_REFUND
+}
+
+enum BalanceTransactionType {
+  CHARGE
+  REFUND
+  ADJUSTMENT
+  APPLICATION_FEE
+  APPLICATION_FEE_REFUND
+  TRANSFER
+  PAYMENT
+  PAYOUT
+  PAYOUT_FAILURE
+  STRIPE_FEE
+  NETWORK_COST
+}
+
+type BalanceTransactionList {
+  data: [BalanceTransaction]
+  """
+  True if this list has another page of items after this one that can be fetched.
+  """
+  has_more: Boolean
+
+  """
+  String representing the object's type. Objects of the same type share the same value. Always has the value `list`.
+  """
+  object: ObjectType
+
+  """
+  The URL where this list can be accessed.
+  """
+  url: String
+}
+
+"""
+https://stripe.com/docs/api/balance/balance_transaction_retrieve
+"""
+input BalanceTransactionWhereUniqueInput {
+  """
+  The ID of the desired balance transaction, as found on any API object that affects the balance (e.g., a charge or transfer).
+  """
+  id: ID!
+}
+
+"""
+https://stripe.com/docs/api/balance/balance_history
+"""
+input BalanceHistoryWhereInput {
+  """
+  A filter on the list based on the object available_on field. The value can be a string with an integer Unix timestamp, or it can be a dictionary.
+  """
+  available_on: CreatedInput
+  created: CreatedInput
+  currency: Currency
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(max: 100)
+  """
+  For automatic Stripe payouts only, only returns transactions that were paid out on the specified payout ID.
+  """
+  payout: ID
+  """
+  Only returns the original transaction.
+  """
+  source: ID #???
+  """
+  A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+  """
+  starting_after: ID
+  type: BalanceTransactionType
+}
+
+type Query {
+  node(id: ID!): Node
+  retrieveBalance: Balance
+  retrieveBalanceTransaction(where: BalanceTransactionWhereUniqueInput): BalanceTransaction
+  """
+  Returns a list of transactions that have contributed to the Stripe account balance (e.g., charges, transfers, and so forth). The transactions are returned in sorted order, with the most recent transactions appearing first.
+  """
+  listBalanceHistory(where: BalanceHistoryWhereInput): BalanceTransactionList
+}

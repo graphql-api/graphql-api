@@ -1,0 +1,90 @@
+interface Object {
+  object: ObjectType
+}
+
+interface ObjectList {
+  object: ObjectType # List
+  has_more: Boolean
+  url: String
+  data: Object
+}
+
+enum ObjectType {
+  account
+  account_link
+  apple_pay_domain
+  application
+  application_fee
+  balance
+  # balanceTransaction
+  balance_ransaction #correct
+  bank_account
+  bitcoin_receiver
+  bitcoin_transaction
+  card
+  charge
+  # checkoutSession
+  "checkout.session" # correct
+  country_spec
+  coupon
+  customer
+  discount
+  dispute
+  ephemeralKey
+  event
+  exchangeRate
+  feeRefund
+  file
+  fileLink
+  invoice
+  invoiceitem
+  issuerFraudRecord
+  issuingAuthorization
+  issuingCard
+  issuingCardDetails
+  issuingCardPin
+  issuingCardholder
+  issuingDispute
+  issuingSettlement
+  issuingTransaction
+  issuingVerification
+  lineItem
+  list
+  loginLink
+  order
+  orderItem
+  orderReturn
+  paymentIntent
+  paymentMethod
+  payout
+  person
+  plan
+  product
+  radarValueList
+  radarValueListItem
+  recipient
+  refund
+  reportingReportRun
+  reportingReportType
+  review
+  scheduledQueryRun
+  sku
+  source
+  sourceMandateNotification
+  sourceTransaction
+  subscription
+  subscriptionItem
+  subscriptionSchedule
+  subscriptionScheduleRevision
+  terminalConnectionToken
+  terminalLocation
+  terminalReader
+  threeDSecure
+  token
+  topup
+  transfer
+  transferReversal
+  usageRecord
+  usageRecordSummary
+  webhookEndpoint
+}

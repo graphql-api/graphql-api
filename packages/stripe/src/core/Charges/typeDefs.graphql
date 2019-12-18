@@ -1,0 +1,367 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Address, AddressInput } from '../../Address.graphql'
+# import { Card } from '../../payment/Cards/typeDefs.graphql'
+# import { Shipping, ShippingInput } from '../../Shipping.graphql'
+# import { Customer } from '../Customers/typeDefs.graphql'
+# import { RefundList } from '../Refunds/typeDefs.graphql'
+# import { CreatedInput } from '../../Created.graphql'
+# import Directives from '../../Directives.graphql'
+# import { TransferData } from '../../TransferData.graphql'
+# import { BalanceTransaction } from '../Balance/typeDefs.graphql'
+# import { ApplicationFee } from '../../connect/ApplicationFees/typeDefs.graphql'
+# import { Dispute } from '../Disputes/typeDefs.graphql'
+# import { Invoice } from '../../billing/Invoices/typeDefs.graphql'
+# import { Account } from '../../connect/Accounts/typeDefs.graphql'
+# import { Order } from '../../orders/Orders/typeDefs.graphql'
+# import { PaymentMethodAchCreditTransfer, PaymentMethodAchDebit, PaymentMethodAlipay, PaymentMethodBancontact, PaymentMethodCard, PaymentMethodCardPresent, PaymentMethodEPS, PaymentMethodGiropay, PaymentMethodiDEAL, PaymentMethodMultibanco, PaymentMethodPrzelewy24, PaymentMethodSOFORT, PaymentMethodWeChatPay} from '../../PaymentMethod.graphql'
+# import { Review } from '../../fraud/Reviews/typeDefs.graphql'
+# import { Transfer } from '../../connect/Transfers/typeDefs.graphql'
+# import { Application } from '../../connect/Application.graphql'
+
+"""
+To charge a credit or a debit card, you create a Charge object. You can retrieve and refund individual charges as well as list all charges. Charges are identified by a unique, random ID.
+"""
+type Charge implements Node & Object {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType!
+  """
+  A positive integer in the smallest currency unit (e.g., 100 cents to charge $1.00 or 100 to charge ¥100, a zero-decimal currency) representing how much to charge. The minimum amount is $0.50 US or equivalent in charge currency.
+  """
+  amount: Float
+  """
+  Amount in cents refunded (can be less than the amount attribute on the charge if a partial refund was issued).
+  """
+  amount_refunded: Int
+  """
+  ID of the Connect application that created the charge.
+  """
+  application: Application @expandable
+  application_fee: ApplicationFee @expandable
+  application_fee_amount: Int
+  balance_transaction: BalanceTransaction @expandable
+  captured: Boolean
+  created: DateTime
+  currency: Currency
+  """
+  ID of the customer this charge is for if one exists.
+  """
+  customer: Customer @expandable
+  description: String
+  destination: String
+  dispute: Dispute @expandable
+  failure_code: String
+  failure_message: String
+  fraud_details: FraudDetails
+  invoice: Invoice @expandable
+  livemode: Boolean
+  metadata: JSON
+  """
+  The account (if any) the charge was made on behalf of without triggering an automatic transfer. See the Connect documentation for details.
+  """
+  on_behalf_of: Account @expandable
+  order: Order @expandable
+  outcome: ChargeOutcome
+  paid: Boolean
+  payment_intent: ID
+  payment_method_details: PaymentMethodDetails
+  receipt_email: String
+  receipt_number: String
+  receipt_url: String
+  refunded: Boolean
+  refunds: RefundList
+  review: Review @expandable
+  shipping: Shipping
+  source: Card
+  source_transfer: Transfer @expandable
+  statement_descriptor: String
+  status: ChargeStatus
+  transfer: Transfer @expandable
+  transfer_data: TransferData
+  """
+  A string that identifies this transaction as part of a group. See the Connect documentation for details.
+  """
+  transfer_group: String
+}
+
+type PaymentMethodDetails {
+  ach_credit_transfer: PaymentMethodAchCreditTransfer
+  ach_debit: PaymentMethodAchDebit
+  alipay: PaymentMethodAlipay
+  bancontact: PaymentMethodBancontact
+  """
+  If this is a card payment, this hash contains the transaction specific details of the card PaymentMethod.
+  """
+  card: PaymentMethodCard
+  """
+  If this is a card_present payment, this hash contains the transaction specific details of the card_present PaymentMethod.
+  """
+  card_present: PaymentMethodCardPresent
+  eps: PaymentMethodEPS
+  giroPay: PaymentMethodGiropay
+  ideal: PaymentMethodiDEAL
+  multibanco: PaymentMethodMultibanco
+  p24: PaymentMethodPrzelewy24
+  sofort: PaymentMethodSOFORT
+  wechat: PaymentMethodWeChatPay
+  type: PaymentMethodType
+  stripe_account: String
+}
+
+enum PaymentMethodType {
+  ach_credit_transfer
+  alipay
+  bancontact
+  card
+  eps
+  giropay
+  ideal
+  multibanco
+  p24
+  sepa_debit
+  sofort
+}
+
+type FraudDetails {
+  stripe_report: String
+  user_report: String
+}
+
+type ChargeOutcome {
+  network_status: NetworkStatus
+  reason: String
+  risk_level: String
+  risk_score: Int
+  rule: ID #@expandable
+  seller_message: String
+  type: ChargeOutcomeType
+}
+
+enum ChargeStatus {
+  succeeded
+  pending
+  faile
+}
+
+enum NetworkStatus {
+  approved_by_network
+  declined_by_network
+  not_sent_to_network
+  reversed_after_approval
+}
+
+enum ChargeOutcomeType {
+  authhorized
+  manual_review
+  issuer_declined
+  blocked
+  invalid
+}
+
+input ChargeWhereUniqueInput {
+  id: ID!
+}
+
+input ChargeCreateInput {
+  """
+  A positive integer representing how much to charge, in the smallest currency unit (e.g., 100 cents to charge $1.00, or 100 to charge ¥100, a zero-decimal currency). The minimum amount is $0.50 USD or equivalent in charge currency.
+  """
+  amount: Float! @constraint(min: 0.5)
+  """
+  Three-letter ISO currency code, in lowercase. Must be a supported currency
+  """
+  currency: Currency!
+  """
+  A fee in cents that will be applied to the charge and transferred to the application owner’s Stripe account. The request must be made with an OAuth key or the Stripe-Account header in order to take an application fee. For more information, see the application fees documentation https://stripe.com/docs/connect/direct-charges#collecting-fees.
+  """
+  application_fee: Int
+  """
+  Whether to immediately capture the charge. Defaults to true. When false, the charge issues an authorization (or pre-authorization), and will need to be captured later. Uncaptured charges expire in seven days. For more information, see the authorizing charges and settling later documentation.
+  """
+  capture: Boolean @default(value: true)
+  card_as_payment_method: Boolean
+  """
+  The ID of an existing customer that will be charged in this request.
+  """
+  customer: ID
+  """
+  An arbitrary string which you can attach to a Charge object. It is displayed when in the web interface alongside the charge. Note that if you use Stripe to send automatic email receipts to your customers, your receipt emails will include the description of the charge(s) that they are describing. This can be unset by updating the value to null and then saving.
+  """
+  description: String
+  #"""
+  #If specified, the charge will be attributed to the destination account for tax reporting, and the funds from the charge will be transferred to the destination account. The ID of the resulting transfer will be returned in the response’s transfer field. For details, see Creating Destination Charges on Your Platform.
+  #"""
+  #destination: ChargeCreateDestinationInput
+  metadata: JSON
+  """
+  The Stripe account ID for which these funds are intended. Automatically set if you use the destination parameter. For details, see Creating Separate Charges and Transfers.
+  """
+  on_behalf_of: ID
+  """
+  The email address to which this charge’s receipt will be sent. The receipt will not be sent until the charge is paid, and no receipts will be sent for test mode charges. If this charge is for a Customer, the email address specified here will override the customer’s email address. If receipt_email is specified for a charge in live mode, a receipt will be sent regardless of your email settings.
+  """
+  receipt_email: String @constraint(format: "email")
+  """
+  Shipping information for the charge. Helps prevent fraud on charges for physical goods.
+  """
+  shipping: ShippingInput
+  """
+  A payment source to be charged. This can be the ID of a card (i.e., credit or debit card), a bank account, a source, a token, or a connected account. For certain sources—namely, cards, bank accounts, and attached sources—you must also pass the ID of the associated customer.
+  """
+  source: ID
+  """
+  An arbitrary string to be displayed on your customer’s credit card statement. This can be up to 22 characters. As an example, if your website is RunClub and the item you’re charging for is a race ticket, you might want to specify a statement_descriptor of RunClub 5K race ticket. The statement description must contain at least one letter, must not contain <> characters, and will appear on your customer’s statement in capital letters. Non-ASCII characters are automatically stripped. While most banks and card issuers display this information consistently, some might display it incorrectly or not at all.
+  """
+  statement_descriptor: String
+  """
+  A string that identifies this transaction as part of a group. For details, see Grouping transactions.
+  """
+  transfer_group: String
+}
+
+input ChargeCreateDestinationInput {
+  """
+  ID of an existing, connected Stripe account.
+  """
+  account: ID!
+  """
+  The amount to transfer to the destination account without creating an Application Fee object. Cannot be combined with the application_fee parameter. Must be less than or equal to the charge amount.
+  """
+  amount: Int
+}
+
+input ChargeUpdateInput {
+  """
+  The ID of an existing customer that will be associated with this request. This field may only be updated if there is no existing associated customer with this charge.
+  """
+  customer: ID
+  """
+  An arbitrary string which you can attach to a charge object. It is displayed when in the web interface alongside the charge. Note that if you use Stripe to send automatic email receipts to your customers, your receipt emails will include the description of the charge(s) that they are describing. This can be unset by updating the value to null and then saving.
+  """
+  description: String
+  fraud_details: FraudDetailsInput
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format. Individual keys can be unset by posting an empty value to them. All keys can be unset by posting an empty value to metadata.
+  """
+  metadata: JSON
+  """
+  This is the email address that the receipt for this charge will be sent to. If this field is updated, then a new email receipt will be sent to the updated address. This can be unset by updating the value to null and then saving.
+  """
+  receipt_email: String @constraint(format: "email")
+  shipping: ShippingInput
+  """
+  A string that identifies this transaction as part of a group. transfer_group may only be provided if it has not been set. See the Connect documentation for details.
+  """
+  transfer_group: String
+}
+
+"""
+A set of key-value pairs you can attach to a charge giving information about its riskiness. If you believe a charge is fraudulent, include a user_report key with a value of fraudulent. If you believe a charge is safe, include a user_report key with a value of safe. Note that you must refund a charge before setting the user_report to fraudulent. Stripe will use the information you send to improve our fraud detection algorithms.
+"""
+input FraudDetailsInput {
+  user_report: UserReport
+}
+
+enum UserReport {
+  fraudulent
+  safe
+}
+
+input ChargeCaptureInput {
+  """
+  The amount to capture, which must be less than or equal to the original amount. Any additional amount will be automatically refunded.
+  """
+  amount: Int
+  """
+  An application fee to add on to this charge. Can only be used with Stripe Connect.
+  """
+  application_fee: Int
+  #"""
+  #An optional dictionary containing a new destination amount to use. Can only be used with destination charges created with Stripe Connect.
+  #"""
+  #destination: DestinationInput
+  """
+  The email address to send this charge’s receipt to. This will override the previously-specified email address for this charge, if one was set. Receipts will not be sent in test mode.
+  """
+  receipt_email: String @constraint(format: "email")
+  """
+  An arbitrary string to be displayed on your customer’s credit card statement. This may be up to 22 characters. As an example, if your website is RunClub and the item you’re charging for is a race ticket, you may want to specify a statement_descriptor of RunClub 5K race ticket. The statement description must contain at least one letter, may not include <>' characters, and will appear on your customer’s statement in capital letters. Non-ASCII characters are automatically stripped. Updating this value will overwrite the previous statement descriptor of this charge. While most banks display this information consistently, some may display it incorrectly or not at all.
+  """
+  statement_descriptor: String @constraint(maxLength: 22)
+  """
+  A string that identifies this transaction as part of a group. transfer_group may only be provided if it has not been set. See the Connect documentation for details.
+  """
+  transfer_group: String
+}
+
+input ChargeCaptureDestinationInput {
+  """
+  The portion of this charge to send to the destination account. Must be less than or equal to the captured amount of the charge.
+  """
+  amount: Int
+}
+
+input ChargeWhereInput {
+  created: CreatedInput
+  """
+  Only return charges for the customer specified by this customer ID.
+  """
+  customer: ID
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int
+  """
+  A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+  """
+  starting_after: ID
+}
+
+type ChargeList implements Object {
+  object: ObjectType
+  url: String
+  has_more: Boolean
+  data: [Charge]
+}
+
+type Query {
+  node(id: ID!): Node
+  """
+  Retrieves the details of a charge that has previously been created. Supply the unique charge ID that was returned from your previous request, and Stripe will return the corresponding charge information. The same information is returned when creating or refunding the charge.
+  """
+  retrieveCharge(where: ChargeWhereUniqueInput): Charge
+  """
+  Returns a list of charges you’ve previously created. The charges are returned in sorted order, with the most recent charges appearing first.
+  """
+  listCharges(where: ChargeWhereInput): ChargeList
+}
+
+type Mutation {
+  """
+  To charge a credit card or other payment source, you create a Charge object. If your API key is in test mode, the supplied payment source (e.g., card) won’t actually be charged, although everything else will occur as if in live mode. (Stripe assumes that the charge would have completed successfully).
+  """
+  createCharge(data: ChargeCreateInput!): Charge
+  """
+  Updates the specified charge by setting the values of the parameters passed. Any parameters not provided will be left unchanged.
+  """
+  updateCharge(where: ChargeWhereUniqueInput!, data: ChargeUpdateInput!): Charge
+  """
+  To charge a credit card or other payment source, you create a Charge object. If your API key is in test mode, the supplied payment source (e.g., card) won’t actually be charged, although everything else will occur as if in live mode. (Stripe assumes that the charge would have completed successfully).
+  """
+  captureCharge(
+    where: ChargeWhereUniqueInput!
+    data: ChargeCaptureInput!
+  ): Charge
+}

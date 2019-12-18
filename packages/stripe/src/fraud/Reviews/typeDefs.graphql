@@ -1,0 +1,146 @@
+# import { CountryCode } from '../../Country.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { DateTime } from '../../Scalars.graphql'
+# import { Charge } from '../../core/Charges/typeDefs.graphql'
+# import { PaymentIntent } from '../../core/PaymentIntents/typeDefs.graphql'
+
+"""
+https://stripe.com/docs/api/radar/reviews/object?lang=node
+"""
+type Review implements Node & Object {
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  """
+  The ZIP or postal code of the card used, if applicable.
+  """
+  billing_zip: String
+  """
+  The charge associated with this review.
+  """
+  charge: Charge @expandable
+  """
+  The reason the review was closed, or null if it has not yet been closed.
+  """
+  closed_reason: ClosedResaon
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+  """
+  The IP address where the payment originated.
+  """
+  ip_address: String
+  """
+  Information related to the location of the payment. Note that this information is an approximation and attempts to locate the nearest population center - it should not be used to determine a specific address.
+  """
+  ip_address_location: IpAddressLocation
+  """
+  as the value true if the object exists in live mode or the value false if the object exists in test mode.
+  """
+  livemode: Boolean
+  """
+  If true, the review needs action.
+  """
+  open: Boolean
+  """
+  The reason the review was opened. One of rule or manual.
+  """
+  opened_reason: OpenedReason
+  """
+  The PaymentIntent ID associated with this review, if one exists.
+  """
+  payment_intent: PaymentIntent @expandable
+  """
+  The reason the review is currently open or closed. One of rule, manual, approved, refunded, refunded_as_fraud, or disputed.
+  """
+  reason: ReviewReason
+  """
+  Information related to the browsing session of the user who initiated the payment.
+  """
+  session: ReviewSession
+}
+
+"""
+Information related to the browsing session of the user who initiated the payment.
+"""
+type ReviewSession {
+  """
+  The browser used in this browser session (e.g., Chrome).
+  """
+  browser: String
+  """
+  Information about the device used for the browser session (e.g., Samsung SM-G930T).
+  """
+  device: String
+  """
+  The platform for the browser session (e.g., Macintosh).
+  """
+  platform: String
+  """
+  The version for the browser session (e.g., 61.0.3163.100).
+  """
+  version: String
+}
+
+"""
+Information related to the location of the payment. Note that this information is an approximation and attempts to locate the nearest population center - it should not be used to determine a specific address.
+"""
+type IpAddressLocation {
+  """
+  The city where the payment originated.
+  """
+  city: String
+  """
+  Two-letter ISO code representing the country where the payment originated.
+  """
+  country: CountryCode
+  """
+  The geographic latitude where the payment originated.
+  """
+  latitude: Float
+  """
+  The geographic longitude where the payment originated.
+  """
+  longitude: Float
+  """
+  The state/county/province/region where the payment originated.
+  """
+  region: String
+}
+
+"""
+The reason the review is currently open or closed. One of rule, manual, approved, refunded, refunded_as_fraud, or disputed.
+"""
+enum ReviewReason {
+  rule
+  MANUAL
+  APPROVED
+  REFUNDED
+  REFUNDED_AS_FRAUD
+  DISPUTED
+}
+
+"""
+The reason the review was opened. One of rule or manual.
+"""
+enum OpenedReason {
+  RULE
+  MANUAL
+}
+
+"""
+The reason the review was closed, or null if it has not yet been closed. One of approved, refunded, refunded_as_fraud, or disputed.
+"""
+enum ClosedResaon {
+  APPROVED
+  REFUNDED
+  REFUNDED_AS_FRAUD
+  DISPUTED
+}

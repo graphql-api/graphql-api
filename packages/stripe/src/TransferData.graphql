@@ -1,0 +1,20 @@
+# import { Account } from './connect/Accounts/typeDefs.graphql'
+# import Directives from './Directives.graphql'
+
+"""
+The data with which to automatically create a Transfer when the payment is finalized. See the PaymentIntents Connect usage guide for details.
+"""
+type TransferData {
+  amount: Float
+  """
+  The account (if any) the payment will be attributed to for tax reporting, and where funds from the payment will be transferred to upon payment success.
+  """
+  destination: Account @expandable
+}
+
+input TransferDataInput {
+  """
+  If specified, successful charges will be attributed to the destination account for tax reporting, and the funds from charges will be transferred to the destination account. The ID of the resulting transfer will be returned on the successful charge’s transfer field.
+  """
+  destination: ID
+}

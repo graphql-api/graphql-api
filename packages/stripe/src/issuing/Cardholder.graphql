@@ -1,0 +1,74 @@
+# import { Address } from '../Address.grapqhl'
+# import { Node } from '../Node.graphql'
+# import { Object, ObjectType } from '../Object.graphql'
+
+"""
+https://stripe.com/docs/api/issuing/cardholders
+"""
+type Cardholder implements Node, Object {
+  """
+  Unique identifier for the object.
+  """
+  id: ID
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  """
+  The cardholder’s billing address.
+  """
+  billing: BillingAddress
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+  """
+  The cardholder’s email address.
+  """
+  email: String
+  """
+  Whether or not this cardholder is the default cardholder.
+  """
+  is_default: Boolean
+  """
+  Has the value true if the object exists in live mode or the value false if the object exists in test mode.
+  """
+  livemode: Boolean
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+  """
+  The cardholder’s name. This will be printed on cards issued to them.
+  """
+  name: String
+  """
+  The cardholder’s phone number.
+  """
+  phone_number: String
+  """
+  One of active, inactive, blocked, or pending.
+  """
+  status: CardholderStatus
+  """
+  One of individual or business_entity.
+  """
+  type: CardholderType
+}
+
+enum CardholderType {
+  INDIVIDUAL
+  BUSINESS_ENTITY
+}
+
+enum CardholderStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  PENDING
+}
+
+type BillingAddress {
+  address: Address
+  name: String
+}

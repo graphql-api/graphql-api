@@ -1,0 +1,208 @@
+# import { Currency } from '../../Currency.graphql'
+# import { Node } from '../../Node.graphql'
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Address, JapaneseAddress } from '../../Address.graphql'
+# import { LegalEntityCompany } from '../../LegalEntity.graphql'
+# import { Person } from '../../Person.graphql'
+# import { AccountSettings, AccountCapabilities, BusinessProfile, AccountType } from './typeDefs.graphql'
+
+type ExpressAccount implements Account & Node & Object {
+  id: ID!
+  object: ObjectType
+  """
+  Optional information related to the business.
+  """
+  businessProfile: BusinessProfile
+  capabilities: AccountCapabilities
+  """
+  Whether the account can create live charges.
+  """
+  charges_enabled: Boolean
+  """
+  The account’s country
+  """
+  country: CountryCode
+  """
+  Three-letter ISO currency code representing the default currency for the
+  account. This must be a currency that [Stripe supports in the account's
+  country](https://stripe.com/docs/payouts).
+  """
+  default_currency: Currency
+  """
+  Whether account details have been submitted. Standard accounts cannot receive payouts before this is true.
+  """ #
+  details_submitted: Boolean
+  """
+  The primary user’s email address.
+  """
+  email: String
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+  """
+  Whether Stripe can send payouts to this account.
+  """
+  payouts_enabled: Boolean
+  """
+  Account options for customizing how the account functions within Stripe.
+  """
+  settings: AccountSettings
+  """
+  The Stripe account type. Can be standard, express, or custom.
+  """
+  type: AccountType
+  ###Express Only
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+  """
+  External accounts (bank accounts and debit cards) currently attached to this account
+  """
+  external_accounts: ExternalAccountList
+  """
+  Information about the requirements for the account, including what information needs to be collected, and by when.
+  """
+  requirements: AccountRequirements
+}
+
+type CustomAccount implements Account & Node & Object {
+  id: ID!
+  object: ObjectType
+  """
+  Optional information related to the business.
+  """
+  businessProfile: BusinessProfile
+  capabilities: AccountCapabilities
+  """
+  Whether the account can create live charges.
+  """
+  charges_enabled: Boolean
+  """
+  The account’s country
+  """
+  country: CountryCode
+  """
+  Three-letter ISO currency code representing the default currency for the
+  account. This must be a currency that [Stripe supports in the account's
+  country](https://stripe.com/docs/payouts).
+  """
+  default_currency: Currency
+  """
+  Whether account details have been submitted. Standard accounts cannot receive payouts before this is true.
+  """ #
+  details_submitted: Boolean
+  """
+  The primary user’s email address.
+  """
+  email: String
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+  """
+  Whether Stripe can send payouts to this account.
+  """
+  payouts_enabled: Boolean
+  """
+  Account options for customizing how the account functions within Stripe.
+  """
+  settings: AccountSettings
+  """
+  The Stripe account type. Can be standard, express, or custom.
+  """
+  type: AccountType
+  ### Custom Only
+  """
+  Information about the company or business. This field is null unless business_type is set to company.
+  """
+  company: LegalEntityCompany
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+  """
+  External accounts (bank accounts and debit cards) currently attached to this account
+  """
+  external_accounts: ExternalAccountList
+  """
+  Information about the person represented by the account. This field is null unless business_type is set to individual.
+  """
+  individual: Person
+  """
+  Information about the requirements for the account, including what information needs to be collected, and by when.
+  """
+  requirements: AccountRequirements
+  """
+  Details on the acceptance of the Stripe Services Agreement
+  """
+  tos_acceptance: AccountTosAcceptance
+}
+
+type AccountTosAcceptance {
+  """
+  The Unix timestamp marking when the Stripe Services Agreement was accepted by the account representative
+  """
+  date: Int
+
+  """
+  The IP address from which the Stripe Services Agreement was accepted by the account representative
+  """
+  ip: String
+
+  """
+  The user agent of the browser from which the Stripe Services Agreement was accepted by the account representative
+  """
+  userAgent: String
+}
+
+type AccountRequirements {
+  """
+  The date the fields in `currently_due` must be collected by to keep payouts
+  enabled for the account. These fields might block payouts sooner if the next
+  threshold is reached before these fields are collected.
+  """
+  current_deadline: DateTime
+
+  """
+  The fields that need to be collected to keep the account enabled. If not
+  collected by the `current_deadline`, these fields will appear in `past_due` as
+  well, and the account will be disabled.
+  """
+  currently_due: [String]
+
+  """
+  If the account is disabled, this string describes why the account can’t create
+  charges or receive payouts. Can be `requirements.past_due`,
+  `requirements.pending_verification`, `rejected.fraud`,
+  `rejected.terms_of_service`, `rejected.listed`, `rejected.other`, `listed`,
+  `under_review`, or `other`.
+  """
+  disabled_reason: String
+
+  """
+  The fields that need to be collected assuming all volume thresholds are
+  reached. As they become required, these fields will appear in `currently_due`
+  as well, and the `current_deadline` will be set.
+  """
+  eventually_due: [String]
+
+  """
+  The fields that weren't collected by the `current_deadline`. These fields need to be collected to re-enable the account.
+  """
+  past_due: [String]
+}
+
+enum DisabledReason {
+  # requirements.past_due
+  # requirements.pending_verification
+  # "rejected.fraud",
+  # rejected.terms_of_service"
+  #  "rejected.listed"
+  #  "rejected.other",
+  listed
+  under_review
+  other
+}

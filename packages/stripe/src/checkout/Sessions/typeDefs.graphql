@@ -1,0 +1,225 @@
+# import * from '../../Scalars.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { CreatedInput } from '../../Created.graphql'
+# import Directives from '../../Directives.graphql'
+# import { LineItem } from '../../billing/Invoices/typeDefs.graphql'
+# import { Plan } from '../../billing/Plans/typeDefs.graphql'
+# import { SKU } from '../../orders/SKUs/typeDefs.graphql'
+# import { ShippingInput } from '../../Shipping.graphql'
+# import { Locale } from '../../Locale.graphql'
+# import { TransferDataInput } from '../../TransferData.graphql'
+# import { CaptureMethod } from '../../core/PaymentIntents/typeDefs.graphql'
+
+union DisplayItems = LineItem | Plan | SKU
+
+"""
+You can create a Checkout Session on your server and pass the provided token on the client. Read more about Checkout's API integration here.
+"""
+type Session implements Node & Object {
+  """
+  The URL the customer will be directed to if they decide to go back to your website.
+  """
+  cancel_url: String
+
+  """
+  A unique string to reference the Checkout Session. This can be a
+  customer ID, a cart ID, or similar. It is included in the
+  `checkout_beta.session_succeeded` webhook and can be used to fulfill the
+  purchase.
+  """
+  client_reference_id: ID
+
+  """
+  The ID of the customer created.
+  """
+  customer: ID
+
+  """
+  The email address used to create the customer object.
+  """
+  customer_email: String
+
+  """
+  The line items, plans, or SKUs that were purchased by the customer.
+  """
+  display_items: [DisplayItems]
+
+  """
+  The token used to pass to `redirectToCheckout` in Stripe.js.
+  """
+  id: ID!
+
+  """
+  Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
+  """
+  livemode: Boolean
+
+  """
+  The IETF language tag of the locale Checkout is displayed in. If blank or `auto`, the browser's locale is used.
+  """
+  locale: Locale
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+
+  """
+  The ID of the PaymentIntent created if SKUs or line items were provided.
+  """
+  payment_intent: String
+
+  """
+  The list of payment method types (e.g. card) that this Checkout Session is allowed to use.
+  """
+  payment_method_types: [String]
+
+  """
+  The ID of the subscription created if one or more plans were provided.
+  """
+  subscription: String
+
+  """
+  The URL the customer will be directed to after a successful payment.
+  """
+  success_url: String
+}
+
+input SessionCreateInput {
+  """
+  Specify whether Checkout should collect the customer's billing address. If set
+  to `required`, Checkout will always collect the customer's billing address. If
+  left blank or set to `auto` Checkout will only collect the billing address
+  when necessary.
+  """
+  billing_address_collection: BillingAddressCollection
+
+  """
+  The URL the customer will be directed to if they decide to go back to your website.
+  """
+  cancel_url: String!
+
+  """
+  A unique string to reference the Checkout Session. This can be a
+  customer ID, a cart ID, or similar. It is included in the
+  `checkout_beta.session_succeeded` webhook and can be used to fulfill the
+  purchase.
+  """
+  client_reference_id: ID
+
+  """
+  ID of the customer this Checkout Session is for if one exists. May only be
+  used with line_items. Usage with subscription_data is not yet available.
+  """
+  customer: ID
+
+  """
+  The email address used to create the customer object. If you already know your
+  customer's email address, use this attribute to prefill it on Checkout.
+  """
+  customer_email: String @constraint(format: "email")
+  """
+  Specifies which fields in the response should be expanded.
+  """
+  expand: [String]
+
+  """
+  A list of items your customer is purchasing.
+  """
+  line_items: [LineItemInput]
+
+  """
+  The IETF language tag of the locale Checkout is displayed in. If blank or
+  `auto`, the browser's locale is used. Supported values are `auto`, `da`, `de`,
+  `en`, `es`, `fi`, `fr`, `it`, `ja`, `nb`, `nl`, `pl`, `pt`, `sv`, or `zh`.
+  """
+  locale: Locale
+
+  """
+  A subset of parameters to be passed to PaymentIntent creation.
+  """
+  payment_intent_data: PaymentIntentDataInput
+
+  """
+  The list of payment method types (e.g. card) that this Checkout Session is allowed to use.
+  """
+  payment_method_types: [String]!
+
+  """
+  A subset of parameters to be passed to subscription creation.
+  """
+  subscriptionData: SubscriptionDataInput
+
+  """
+  The URL the customer will be directed to after a successful payment.
+  """
+  success_url: String!
+}
+
+enum BillingAddressCollection {
+  auto
+  required
+}
+
+input LineItemInput {
+  amount: Int!
+  currency: String!
+  description: String
+  images: [String]
+  name: String!
+  quantity: Int!
+}
+
+input PaymentIntentDataInput {
+  application_fee_amount: Int
+  capture_method: CaptureMethod
+  description: String
+  metadata: JSON
+  on_behalf_of: String
+  receipt_email: String
+  shipping: ShippingInput
+  statement_descriptor: String
+  transfer_data: TransferDataInput
+}
+
+input SubscriptionDataInput {
+  """
+  List of items, each with an attached plan.
+  """
+  items: [SubscriptionDataItemsInput]!
+  metadata: JSON
+  trial_end: Int
+  trial_period_days: Int
+}
+
+input SubscriptionDataItemsInput {
+  # billing_thresholds: String
+  # clear_usage: Boolean
+  # deleted: Boolean
+  # id: ID
+  # metadata: JSON
+  plan: String!
+  quantity: Int
+}
+
+input SessionWhereUniqueInput {
+  """
+  The ID of the Checkout Session.
+  """
+  session: ID!
+}
+
+type Query {
+  """
+  Retrieves a Session object.
+  """
+  retrieveSession(where: SessionWhereUniqueInput!): Session
+}
+
+type Mutation {
+  """
+  Creates a Session object.
+  """
+  createSession(data: SessionCreateInput!): Session
+}

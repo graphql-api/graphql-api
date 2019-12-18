@@ -1,0 +1,116 @@
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import { Currency } from '../../Currency.graphql'
+# import Directives from '../../Directives.graphql'
+# import { BalanceTransaction } from '../../core/Balance/typeDefs.graphql'
+# import { Account } from '../Accounts/typeDefs.graphql'
+# import { Charge } from '../../core/Charges/typeDefs.graphql'
+# import { Refund } from '../../core/Refunds/typeDefs.graphql'
+# import { TransferReversalList } from '../TransferReversals/typeDefs.graphql'
+"""
+A Transfer object is created when you move funds between Stripe accounts as part of Connect.
+
+Before April 6, 2017, transfers also represented movement of funds from a Stripe account to a card or bank account. This behavior has since been split out into a Payout object, with corresponding payout endpoints. For more information, read about the transfer/payout split.
+"""
+type Transfer implements Node & Object {
+  """
+  Amount in %s to be transferred.
+  """
+  amount: Float
+
+  """
+  Amount in %s reversed (can be less than the amount attribute on the transfer if a partial reversal was issued).
+  """
+  amount_reversed: Int
+
+  """
+  Balance transaction that describes the impact of this transfer on your account balance.
+  """
+  balance_transaction: BalanceTransaction @expandable
+
+  """
+  Time that this record of the transfer was first created.
+  """
+  created: DateTime
+
+  """
+  Three-letter [ISO currency
+  code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+  a [supported currency](https://stripe.com/docs/currencies).
+  """
+  currency: Currency
+
+  """
+  An arbitrary string attached to the object. Often useful for displaying to users.
+  """
+  description: String
+
+  """
+  ID of the Stripe account the transfer was sent to.
+  """
+  destination: Account @expandable
+
+  """
+  If the destination is a Stripe account, this will be the ID of the payment
+  that the destination account received for the transfer.
+  """
+  destination_payment: Charge @expandable
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+
+  """
+  Has the value [true] if the object exists in live mode or the value [false] if the object exists in test mode.
+  """
+  livemode: Boolean
+
+  """
+  A set of key-value pairs that you can attach to a transfer object. It can be
+  useful for storing additional information about the transfer in a structured format.
+  """
+  metadata: JSON
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+
+  """
+  A list of reversals that have been applied to the transfer.
+  """
+  reversals: TransferReversalList
+
+  """
+  Whether the transfer has been fully reversed. If the transfer is only
+  partially reversed, this attribute will still be false.
+  """
+  reversed: Boolean
+
+  """
+  ID of the charge or payment that was used to fund the transfer. If null, the
+  transfer was funded from the available balance.
+  """
+  source_transaction: Charge @expandable
+
+  """
+  The source balance this transfer came from. One of [card], [financing], [bank_account], or [alipay_account].
+  """
+  source_type: TransferSourceType
+
+  """
+  A string that identifies this transaction as part of a group. See the [Connect documentation](https://stripe.com/docs/connect/charges-transfers#grouping-transactions) for details.
+  """
+  transfer_group: String
+}
+
+enum TransferSourceType {
+  card
+  financing
+  bank_account
+  alipay_account
+}
+
+

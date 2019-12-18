@@ -1,0 +1,21 @@
+"""
+A filter on the list based on the object field. The value can be a string with an integer Unix timestamp, or it can be a dictionary with the following options:
+"""
+input CreatedInput {
+  """
+  Return results where the field is greater than this value.
+  """
+  gt: DateTime
+  """
+  Return results where the field is greater than or equal to this value.
+  """
+  gte: DateTime
+  """
+  Return results where the field is less than this value.
+  """
+  lt: DateTime
+  """
+  Return results where the field is less than or equal to this value.
+  """
+  lte: DateTime
+}

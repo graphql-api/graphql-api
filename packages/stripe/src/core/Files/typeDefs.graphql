@@ -1,0 +1,134 @@
+# import { CreatedInput } from '../../Created.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { FileLinkList } from '../FileLinks/typeDefs.graphql'
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import Directives from '../../Directives.graphql'
+
+type File implements Node & Object {
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+
+  """
+  A filename for the file, suitable for saving to a filesystem.
+  """
+  filename: String
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+  links: FileLinkList
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+
+  """
+  The purpose of the file. Possible values are `business_icon`, `business_logo`,
+  `customer_signature`, `dispute_evidence`, `finance_report_run`,
+  `founders_stock_document`, `identity_document`, `pci_document`,
+  `sigma_scheduled_query`, or `tax_document_user_upload`.
+  """
+  purpose: Purpose
+
+  """
+  The size in bytes of the file object.
+  """
+  size: Float
+
+  """
+  A user friendly title for the document.
+  """
+  title: String
+  """
+  The URL from which the file can be downloaded using your live secret API key.
+  """
+  url: String
+  """
+  The type of the file returned (e.g., `csv`, `pdf`, `jpg`, or `png`).
+  """
+  type: FileType
+}
+
+enum FileType {
+  csv
+  pdf
+  jpg
+  png
+}
+
+type FileList implements Object {
+  object: ObjectType
+  has_more: Boolean
+  url: String
+  data: [File]
+}
+
+# https://www.apollographql.com/docs/apollo-server/api/apollo-server#parameters
+scalar Upload
+
+input FileCreateInput {
+  """
+  A file to upload. The file should follow the specifications of RFC 2388 (which defines file transfers for the multipart/form-data protocol).
+  """
+  file: Upload!
+  """
+  The purpose of the uploaded file. Possible values are business_icon, business_logo, customer_signature, dispute_evidence, identity_document, pci_document, or tax_document_user_upload
+  """
+  purpose: Purpose!
+}
+
+input FileWhereUniqueInput {
+  id: ID!
+}
+
+input FileWhereInput {
+  """
+  A filter on the list based on the object created field. The value can be a string with an integer Unix timestamp, or it can be a dictionary.
+  """
+  created: CreatedInput
+  """
+  A cursor for use in pagination. ending_before is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_bar, your subsequent call can include ending_before=obj_bar in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(max: 100)
+  """
+  The file purpose to filter queries by. If none is provided, files will not be filtered by purpose.
+  """
+  purpose: Purpose
+  """
+  A cursor for use in pagination. starting_after is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include starting_after=obj_foo in order to fetch the next page of the list.
+  """
+  starting_after: ID
+}
+
+enum Purpose {
+  business_logo
+  customer_signature
+  dispute_evidence
+  identity_document
+  pci_document
+  tax_document_user_upload
+}
+
+type Query {
+  """
+  Retrieves the details of an existing file object. Supply the unique file ID from a file, and Stripe will return the corresponding file object.
+  """
+  retrieveFile(where: FileWhereUniqueInput!): File
+  """
+  Returns a list of the files that your account has access to. The files are returned sorted by creation date, with the most recently created files appearing first.
+  """
+  listFiles(where: FileWhereInput): FileList
+}
+
+# type Mutation {
+# createFile(data: FileCreateInput!)
+# }

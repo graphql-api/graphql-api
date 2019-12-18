@@ -1,0 +1,284 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import Directives from '../../Directives.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { CreatedInput } from '../../Created.graphql'
+# import { Customer } from '../../core/Customers/typeDefs.graphql'
+# import { Invoice } from '../Invoices/typeDefs.graphql'
+# import { Plan } from '../Plans/typeDefs.graphql'
+# import { BillingSubscription } from '../Subscriptions/typeDefs.graphql'
+# import { Period, PeriodInput } from '../../Period.graphql'
+
+"""
+Sometimes you want to add a charge or credit to a customer, but actually charge or credit the customer's card only at the end of a regular billing cycle. This is useful for combining several charges (to minimize per-transaction fees), or for having Stripe tabulate your usage-based billing totals.
+"""
+type InvoiceItem implements Node & Object {
+  """
+  Amount (in the [currency] specified) of the invoice item. This should always be equal to [unit_amount * quantity`.
+  """
+  amount: Int
+
+  """
+  Three-letter [ISO currency
+  code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase. Must be
+  a [supported currency](https://stripe.com/docs/currencies).
+  """
+  currency: String
+
+  """
+  The ID of the customer who will be billed when this invoice item is billed.
+  """
+  customer: Customer @expandable
+  date: Int
+
+  """
+  An arbitrary string attached to the object. Often useful for displaying to users.
+  """
+  description: String
+
+  """
+  If true, discounts will apply to this invoice item. Always false for prorations.
+  """
+  discountable: Boolean
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+
+  """
+  The ID of the invoice this invoice item belongs to.
+  """
+  invoice: Invoice @expandable
+
+  """
+  Has the value [true] if the object exists in live mode or the value [false] if the object exists in test mode.
+  """
+  livemode: Boolean
+
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful
+  for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  period: Period
+
+  """
+  If the invoice item is a proration, the plan of the subscription that the proration was computed for.
+  """
+  plan: Plan
+
+  """
+  Whether the invoice item was created automatically as a proration adjustment when the customer switched plans.
+  """
+  proration: Boolean
+
+  """
+  Quantity of units for the invoice item. If the invoice item is a proration,
+  the quantity of the subscription that the proration was computed for.
+  """
+  quantity: Int
+
+  """
+  The subscription that this invoice item has been created for, if any.
+  """
+  subscription: BillingSubscription @expandable
+  subscription_item: ID
+
+  """
+  Unit Amount (in the [currency] specified) of the invoice item.
+  """
+  unit_amount: Int
+}
+
+input InvoiceItemCreateInput {
+  """
+  The integer amount in cents of previewed invoice item.
+  """
+  amount: Int
+  """
+  An arbitrary string which you can attach to the invoice item. The description is displayed in the invoice for easy tracking. This can be unset by updating the value to null and then saving.
+  """
+  description: String
+  """
+  Explicitly controls whether discounts apply to this invoice item. Defaults to true, except for negative invoice items.
+  """
+  discountable: Boolean
+  """
+  The ID of the invoice item to update in preview. If not specified, a new invoice item will be added to the preview of the upcoming invoice.
+  """
+  invoice: ID
+  """
+  A set of key-value pairs that you can attach to an invoice item object. It can be useful for storing additional information about the invoice item in a structured format.
+  """
+  metadata: JSON
+  period: PeriodInput
+  """
+  Non-negative integer. The quantity of units for the invoice item.
+  """
+  quantity: Int @constraint(min: 1)
+  """
+  The ID of a subscription to add this invoice item to. When left blank, the invoice item will be be added to the next upcoming scheduled invoice. When set, scheduled invoices for subscriptions other than the specified subscription will ignore the invoice item. Use this when you want to express that an invoice item has been accrued within the context of a particular subscription.
+  """
+  subscription: ID
+  """
+  The integer unit amount in cents of the charge to be applied to the upcoming invoice. This unit_amount will be multiplied by the quantity to get the full amount. If you want to apply a credit to the customer’s account, pass a negative unit_amount.
+  """
+  unit_amount: Int
+}
+input InvoiceItemUpdateInput {
+  """
+  The integer amount in **%s** of the charge to be applied to the upcoming
+  invoice. If you want to apply a credit to the customer's account, pass a
+  negative amount.
+  """
+  amount: Int
+
+  """
+  An arbitrary string which you can attach to the invoice item. The description
+  is displayed in the invoice for easy tracking.
+  """
+  description: String
+
+  """
+  Controls whether discounts apply to this invoice item. Defaults to false for
+  prorations or negative invoice items, and true for all other invoice items.
+  Cannot be set to true for prorations.
+  """
+  discountable: Boolean
+  """
+  A set of key-value pairs that you can attach to an invoice item object. It can
+  be useful for storing additional information about the invoice item in a
+  structured format.
+  """
+  metadata: JSON
+
+  """
+  The period associated with this invoice item.
+  """
+  period: PeriodInput
+
+  """
+  Non-negative integer. The quantity of units for the invoice item.
+  """
+  quantity: Int
+
+  """
+  The integer unit amount in **%s** of the charge to be applied to the upcoming
+  invoice. This unit_amount will be multiplied by the quantity to get the full
+  amount. If you want to apply a credit to the customer's account, pass a
+  negative unit_amount.
+  """
+  unit_amount: Int
+}
+
+type InvoiceItemList implements Object {
+  data: [InvoiceItem]
+
+  """
+  True if this list has another page of items after this one that can be fetched.
+  """
+  has_more: Boolean
+
+  """
+  String representing the object's type. Objects of the same type share the same value. Always has the value `list`.
+  """
+  object: ObjectType
+
+  """
+  The URL where this list can be accessed.
+  """
+  url: String
+}
+
+input InvoiceItemWhereUniqueInput {
+  """
+  The ID of the desired invoice item.
+  """
+  invoiceItem: ID!
+}
+
+input InvoiceItemWhereInput {
+  created: CreatedInput
+
+  """
+  The identifier of the customer whose invoice items to return. If none is provided, all invoice items will be returned.
+  """
+  customer: ID
+
+  """
+  A cursor for use in pagination. [ending_before] is an object ID that defines
+  your place in the list. For instance, if you make a list request and receive
+  100 objects, starting with [obj_bar`, your subsequent call can include
+  [ending_before=obj_bar] in order to fetch the previous page of the list.
+  """
+  ending_before: ID
+
+  """
+  Only return invoice items belonging to this invoice. If none is provided,
+  all invoice items will be returned. If specifying an invoice, no customer
+  identifier is needed.
+  """
+  invoice: ID
+
+  """
+  A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 10.
+  """
+  limit: Int @constraint(exclusiveMin: 1, max: 100)
+
+  """
+  Set to [true] to only show pending invoice items, which are not yet attached
+  to any invoices. Set to [false] to only show invoice items already attached
+  to invoices. If unspecified, no filter is applied.
+  """
+  pending: Boolean
+
+  """
+  A cursor for use in pagination. [starting_after] is an object ID that
+  defines your place in the list. For instance, if you make a list request and
+  receive 100 objects, ending with [obj_foo`, your subsequent call can include
+  [starting_after=obj_foo] in order to fetch the next page of the list.
+  """
+  starting_after: ID
+}
+
+type InvoiceItemDeletePayload implements Object {
+  object: ObjectType
+  deleted: Boolean
+}
+
+type Query {
+  """
+  Retrieves the invoice item with the given ID.
+  """
+  retrieveInvoiceItem(where: InvoiceItemWhereUniqueInput!): InvoiceItem
+  """
+  Returns a list of your invoice items. Invoice items are returned sorted by creation date, with the most recently created invoice items appearing first.
+  """
+  listInvoiceItems(where: InvoiceItemWhereInput): InvoiceItemList
+}
+
+type Mutation {
+  """
+  Creates an item to be added to a draft invoice. If no invoice is specified, the item will be on the next invoice created for the customer specified.
+  """
+  createInvoiceItem(data: InvoiceItemCreateInput!): InvoiceItem
+  """
+  Updates the amount or description of an invoice item on an upcoming invoice. Updating an invoice item is only possible before the invoice it’s attached to is closed.
+  """
+  updateInvoiceItem(
+    where: InvoiceItemWhereUniqueInput!
+    data: InvoiceItemUpdateInput!
+  ): InvoiceItem
+  """
+  Deletes an invoice item, removing it from an invoice. Deleting invoice items is only possible when they’re not attached to invoices, or if it’s attached to a draft invoice.
+  """
+  deleteInvoiceItem(
+    where: InvoiceItemWhereUniqueInput!
+  ): InvoiceItemDeletePayload
+}

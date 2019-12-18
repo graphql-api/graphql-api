@@ -1,0 +1,185 @@
+# import { Currency } from './Currency.graphql'
+# import { CountryCode } from './Country.graphql'
+
+type PaymentMethodCard {
+  brand: Brand
+  checks: CardChecks
+  country: CountryCode
+  last4: String
+  exp_month: Int
+  exp_year: Int
+  fingerprint: String
+  funding: Funding
+  three_d_secure: String
+  wallet: String # to do
+}
+
+type CardChecks {
+  address_line1_check: String
+  address_postal_code_check: String
+  cvc_check: String
+}
+
+type PaymentMethodCardPresent {
+  brand: Brand
+  country: CountryCode
+  emv_auth_data: String
+  exp_month: Int
+  exp_year: Int
+  fingerprint: String
+  funding: Funding
+  generated_card: ID
+  last4: String
+  read_method: String
+  receipt: CardPresentReceipt
+}
+
+type CardPresentReceipt {
+  application_cryptogram: String
+  application_preferred_name: String
+  authorization_code: String
+  authorization_response_code: String
+  cardholder_verification_method: String
+  dedicated_file_name: String
+  terminal_verification_results: String
+  transaction_status_information: String
+}
+
+enum Brand {
+  amex
+  diners
+  discover
+  jcb
+  mastercard
+  unionpay
+  visa
+  unknown
+}
+
+enum Funding {
+  credit
+  debit
+  prepaid
+  unknown
+}
+
+"""
+https://stripe.com/docs/sources/bancontact
+"""
+type PaymentMethodBancontact {
+  bank_code: String # null,
+  bic: String # null,
+  bank_name: String # null,
+  iban_last4: Int # null,
+  statement_descriptor: String # null,
+  preferred_language: String # null
+}
+
+"""
+https://stripe.com/docs/sources/alipay
+"""
+type PaymentMethodAlipay {
+  statement_descriptor: String # null,
+  native_url: String # null
+}
+
+"""
+https://stripe.com/docs/sources/ach-credit-transfer
+"""
+type PaymentMethodAchCreditTransfer {
+  account_number: String #test_52796e3294dc",
+  routing_number: Int #"110000000",
+  fingerprint: String # "ecpwEzmBOSMOqQTL",
+  bank_name: String # "TEST BANK",
+  swift_code: String # "TSTEZ122"
+}
+
+type PaymentMethodAchDebit {
+  account_holder_type: BusinessType
+  bank_name: String
+  country: CountryCode
+  fingerprint: String
+  """
+  Last four digits of the bank account number.
+  """
+  last4: String
+  """
+  Routing transit number of the bank account.
+  """
+  routing_number: String
+}
+
+"""
+https://stripe.com/docs/sources/eps
+"""
+type PaymentMethodEPS {
+  reference: String # null,
+  statement_descriptor: String # null,
+}
+
+"""
+https://stripe.com/docs/sources/giropay
+"""
+type PaymentMethodGiropay {
+  bank_code: String # null,
+  bic: String #null,
+  bank_name: String # null,
+  statement_descriptor: String # null
+}
+
+"""
+https://stripe.com/docs/sources/ideal
+"""
+type PaymentMethodiDEAL {
+  bank: String # "ing",
+  bic: String # null,
+  iban_last4: Int # null,
+  statement_descriptor: String # null
+}
+
+"""
+https://stripe.com/docs/sources/multibanco
+"""
+type PaymentMethodMultibanco {
+  reference: Int # "12345",
+  entity: Int #"123456789",
+}
+
+"""
+https://stripe.com/docs/sources/p24
+"""
+type PaymentMethodPrzelewy24 {
+  reference: String # "P24-000-111-222"
+}
+
+"""
+https://stripe.com/docs/sources/sepa-debit
+"""
+type PaymentMethodSEPADirectDebit {
+  bank_code: Int # "37040044",
+  country: CountryCode # "DE",
+  fingerprint: String # "NxdSyRegc9PsMkWy",
+  last4: Int # "3001",
+  mandate_reference: String # "NXDSYREGC9PSMKWY",
+  mandate_url: String #  "https://hooks.stripe.com/adapter/sepa_debit/file/src_18HgGjHNCLa1Vra6Y9TIP6tU/src_client_secret_XcBmS94nTg5o0xc9MSliSlDW"
+}
+
+"""
+https://stripe.com/docs/sources/sofort
+"""
+type PaymentMethodSOFORT {
+  country: CountryCode
+  bank_code: String # null,
+  bic: String # null,
+  bank_name: String # null,
+  iban_last4: Int # null,
+  preferred_language: String # null,
+  statement_descriptor: String # null
+}
+
+"""
+https://stripe.com/docs/sources/wechat-pay
+"""
+type PaymentMethodWeChatPay {
+  qr_code_url: String # "weixin://wxpay/bizpayurl?pr=RaXzhu4",
+}

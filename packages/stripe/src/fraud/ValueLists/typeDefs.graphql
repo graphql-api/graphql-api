@@ -1,0 +1,72 @@
+# import { DateTime, JSON } from '../../Scalars.graphql'
+# import Directives from '../../Directives.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { ValueListItemList } from '../ValueListItems/typeDefs.graphql'
+
+"""
+Value lists allow you to group values together which can then be referenced in rules.
+"""
+type ValueList implements Node & Object {
+  """
+  Unique identifier for the object.
+  """
+  id: ID
+  """
+  String representing the object’s type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  """
+  The name of the value list for use in rules.
+  """
+  alias: String
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+  """
+  The name or email address of the user who created this value list.
+  """
+  created_by: ID
+  """
+  The type of items in the value list. One of card_fingerprint, card_bin, email, ip_address, country, string, or case_sensitive_string.
+  """
+  item_type: ValueListItemType
+  """
+  List of items contained within this value list.
+  """
+  list_items: ValueListItemList
+  """
+  Has the value true if the object exists in live mode or the value false if the object exists in test mode.
+  """
+  livemode: Boolean
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+  """
+  The name of the value list.
+  """
+  name: String
+}
+
+enum ValueListItemType {
+  card_fingerprint
+  card_bin
+  email
+  ip_address
+  country
+  string
+  case_sensitive_string
+}
+
+input ValueListItemCreateInput {
+  """
+  The value of the item (whose type must match the type of the parent value list).
+  """
+  value: String!
+  """
+  The identifier of the value list which the created item will be added to.
+  """
+  value_list: ID!
+}

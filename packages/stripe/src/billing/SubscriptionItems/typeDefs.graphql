@@ -1,0 +1,85 @@
+# import { DateTime, JSON} from '../../Scalars.graphql'
+# import { Customer } from '../../core/Customers/typeDefs.graphql'
+# import { Source } from '../../payment/Sources/typeDefs.graphql'
+# import { Discount } from '../Discounts/typeDefs.graphql'
+# import { Object, ObjectType } from '../../Object.graphql'
+# import { Node } from '../../Node.graphql'
+# import { Plan } from '../Plans/typeDefs.graphql'
+
+"""
+https://stripe.com/docs/api/subscription_items
+"""
+type BillingSubscriptionItem implements Node & Object {
+  """
+  Define thresholds at which an invoice will be sent, and the related subscription advanced to a new billing period
+  """
+  billing_thresholds: BillingSubscriptionItemBillingThresholds
+
+  """
+  Time at which the object was created. Measured in seconds since the Unix epoch.
+  """
+  created: DateTime
+
+  """
+  Unique identifier for the object.
+  """
+  id: ID!
+
+  """
+  Set of key-value pairs that you can attach to an object. This can be useful
+  for storing additional information about the object in a structured format.
+  """
+  metadata: JSON
+
+  """
+  String representing the object's type. Objects of the same type share the same value.
+  """
+  object: ObjectType
+  plan: Plan
+
+  """
+  The [quantity](https://stripe.com/docs/subscriptions/quantities) of the plan to which the customer should be subscribed.
+  """
+  quantity: Int
+
+  """
+  The \`subscription\` this \`subscription_item\` belongs to.
+  """
+  subscription: ID
+}
+
+"""
+Define thresholds at which an invoice will be sent, and the related subscription advanced to a new billing period
+"""
+type BillingSubscriptionItemBillingThresholds {
+  """
+  Usage threshold that triggers the subscription to create an invoice
+  """
+  usage_gte: Float
+}
+
+"""
+List of subscription items, each with an attached plan.
+"""
+type BillingSubscriptionItemList implements Object {
+  data: [BillingSubscriptionItem]
+
+  """
+  True if this list has another page of items after this one that can be fetched.
+  """
+  has_more: Boolean
+
+  """
+  String representing the object's type. Objects of the same type share the same value. Always has the value `list`.
+  """
+  object: ObjectType
+
+  """
+  The URL where this list can be accessed.
+  """
+  url: String
+}
+
+input BillingSubscriptionItemWhereUniqueInput {
+  subscription_item: ID!
+}
