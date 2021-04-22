@@ -1,5 +1,33 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+
 # dependencies
 /node_modules
+
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+
+# compiled output
+/dist
+/tmp
+/out-tsc
+
 
 # testing
 /coverage
@@ -12,7 +40,6 @@
 /build
 
 # misc
-.DS_Store
 *.pem
 
 # debug
@@ -41,3 +68,17 @@ report.*.json
 
 # .vscode Debugging
 .vscode/*-debug-profile
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
