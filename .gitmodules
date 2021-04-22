@@ -13,3 +13,6 @@
 [submodule "packages/local/file-system-access"]
 	path = packages/local/file-system-access
 	url = https://jfabraxas@github.com/graphql-api/graphql-local-file-system-access
+[submodule "packages/local/space-storage"]
+	path = packages/local/space-storage
+	url = https://jfabraxas@github.com/graphql-api/graphql-local-space-storage
