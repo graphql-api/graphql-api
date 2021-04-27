@@ -16,3 +16,6 @@
 [submodule "packages/local/space-storage"]
 	path = packages/local/space-storage
 	url = https://jfabraxas@github.com/graphql-api/graphql-local-space-storage
+[submodule "packages/api/nft-storage"]
+	path = packages/api/nft-storage
+	url = https://jfabraxas@github.com/graphql-api/graphql-api-nft-storage
