@@ -19,3 +19,12 @@
 [submodule "packages/api/nft-storage"]
 	path = packages/api/nft-storage
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-nft-storage
+[submodule "packages/api/pinata"]
+	path = packages/api/pinata
+	url = https://jfabraxas@github.com/graphql-api/graphql-api.git
+[submodule "packages/api/infura"]
+	path = packages/api/infura
+	url = https://jfabraxas@github.com/graphql-api/graphql-api.git
+[submodule "packages/api/netlify"]
+	path = packages/api/netlify
+	url = https://jfabraxas@github.com/graphql-api/graphql-api-netlify
