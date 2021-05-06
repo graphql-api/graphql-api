@@ -80,6 +80,36 @@
           }
         }
       }
+    },
+    "api-youtube": {
+      "root": "packages/api/youtube",
+      "sourceRoot": "packages/api/youtube/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": { "lintFilePatterns": ["packages/api/youtube/**/*.ts"] }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/packages/api/youtube"],
+          "options": {
+            "jestConfig": "packages/api/youtube/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/packages/api/youtube",
+            "tsConfig": "packages/api/youtube/tsconfig.lib.json",
+            "packageJson": "packages/api/youtube/package.json",
+            "main": "packages/api/youtube/src/index.ts",
+            "assets": ["packages/api/youtube/*.md"]
+          }
+        }
+      }
     }
   }
 }
