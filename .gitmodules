@@ -31,3 +31,6 @@
 [submodule "packages/api/sevdesk"]
 	path = packages/api/sevdesk
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-sevdesk
+[submodule "packages/api/youtube"]
+	path = packages/api/youtube
+	url = https://github.com/graphql-api/graphql-api-youtube
