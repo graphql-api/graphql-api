@@ -14,7 +14,8 @@
   "projects": {
     "example": { "tags": [] },
     "api-stripe": { "tags": [] },
-    "api-youtube": { "tags": [] }
+    "api-youtube": { "tags": [] },
+    "tools": { "tags": [] }
   },
   "workspaceLayout": { "appsDir": "apps", "libsDir": "packages" }
 }
