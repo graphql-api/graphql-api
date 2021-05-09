@@ -3,6 +3,7 @@ module.exports = {
     '<rootDir>/apps/example',
     '<rootDir>/packages/api/stripe',
     '<rootDir>/packages/api/youtube',
-    '<rootDir>/packages/tools'
+    '<rootDir>/packages/tools',
+    '<rootDir>/packages/api/sftp'
   ]
 }

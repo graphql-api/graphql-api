@@ -140,6 +140,36 @@
           }
         }
       }
+    },
+    "api-sftp": {
+      "root": "packages/api/sftp",
+      "sourceRoot": "packages/api/sftp/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": { "lintFilePatterns": ["packages/api/sftp/**/*.ts"] }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/packages/api/sftp"],
+          "options": {
+            "jestConfig": "packages/api/sftp/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/packages/api/sftp",
+            "tsConfig": "packages/api/sftp/tsconfig.lib.json",
+            "packageJson": "packages/api/sftp/package.json",
+            "main": "packages/api/sftp/src/index.ts",
+            "assets": ["packages/api/sftp/*.md"]
+          }
+        }
+      }
     }
   }
 }

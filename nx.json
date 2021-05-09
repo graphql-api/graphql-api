@@ -15,7 +15,8 @@
     "example": { "tags": [] },
     "api-stripe": { "tags": [] },
     "api-youtube": { "tags": [] },
-    "tools": { "tags": [] }
+    "tools": { "tags": [] },
+    "api-sftp": { "tags": [] }
   },
   "workspaceLayout": { "appsDir": "apps", "libsDir": "packages" }
 }
