@@ -19,7 +19,8 @@
       "@graphql-api/stripe/*": ["packages/api/stripe/src/*"],
       "@graphql-api/youtube": ["packages/api/youtube/src/index.ts"],
       "@graphql-api/tools": ["packages/tools/src/index.ts"],
-      "@graphql-api/sftp": ["packages/api/sftp/src/index.ts"]
+      "@graphql-api/sftp": ["packages/api/sftp/src/index.ts"],
+      "@graphql-api/symbl": ["packages/api/symbl/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

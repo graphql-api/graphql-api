@@ -16,7 +16,8 @@
     "api-stripe": { "tags": [] },
     "api-youtube": { "tags": [] },
     "tools": { "tags": [] },
-    "api-sftp": { "tags": [] }
+    "api-sftp": { "tags": [] },
+    "api-symbl": { "tags": [] }
   },
   "workspaceLayout": { "appsDir": "apps", "libsDir": "packages" }
 }
