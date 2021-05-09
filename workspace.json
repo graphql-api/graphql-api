@@ -110,6 +110,36 @@
           }
         }
       }
+    },
+    "tools": {
+      "root": "packages/tools",
+      "sourceRoot": "packages/tools/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": { "lintFilePatterns": ["packages/tools/**/*.ts"] }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/packages/tools"],
+          "options": {
+            "jestConfig": "packages/tools/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/packages/tools",
+            "tsConfig": "packages/tools/tsconfig.lib.json",
+            "packageJson": "packages/tools/package.json",
+            "main": "packages/tools/src/index.ts",
+            "assets": ["packages/tools/*.md"]
+          }
+        }
+      }
     }
   }
 }
