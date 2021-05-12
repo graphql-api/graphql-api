@@ -1,0 +1,26 @@
+{
+  "name": "@graphql-api/example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "netlify-lambda build lambda --config ./webpack.functions.js",
+    "start": "netlify-lambda serve lambda --config ./webpack.functions.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-lambda": "^2.4.8",
+    "graphql": "^14.2.0",
+    "netlify-lambda": "^1.4.3"
+  },
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/aws-lambda": "^8.10.23",
+    "@types/node": "^11.12.0",
+    "graphql-import-loader": "^0.2.1",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.3.4000"
+  }
+}
