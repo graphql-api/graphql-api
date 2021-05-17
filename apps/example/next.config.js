@@ -7,7 +7,7 @@ function webpack(config, options) {
   config.module.rules.push({
     test: /\.graphql$/,
     exclude: /node_modules/,
-    use: [options.defaultLoaders.babel, { loader: 'graphql-let/loader' }],
+    use: [options.defaultLoaders.babel, { loader: 'graphql-let/loader' }]
   })
 
   config.module.rules.push({
@@ -25,5 +25,13 @@ module.exports = withNx({
     // See: https://github.com/gregberge/svgr
     svgr: true
   },
-  webpack
+  webpack,
+  target: 'experimental-serverless-trace',
+  typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // !! WARN !!
+    ignoreBuildErrors: true
+  }
 })

@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev:example": "yarn nx serve example",
+    "build:example": "yarn nx build example",
     "nx": "nx",
     "start": "nx serve",
     "build": "nx build",
