@@ -22,9 +22,9 @@
 [submodule "packages/api/youtube"]
 	path = packages/api/youtube
 	url = https://github.com/graphql-api/graphql-api-youtube
-[submodule "packages/api/sftp"]
-	path = packages/api/sftp
-	url = https://github.com/graphql-api/graphql-api-sftp
 [submodule "packages/api/notion"]
 	path = packages/api/notion
 	url = https://github.com/graphql-api/graphql-api-notion
+[submodule "packages/api/sftp"]
+	path = packages/api/sftp
+	url = https://github.com/graphql-api/graphql-api-sftp
