@@ -42,4 +42,4 @@
 	url = https://github.com/graphql-api/graphql-api-symbl
 [submodule "packages/api/notion"]
 	path = packages/api/notion
-	url = https://github.com/graphql-api/graphql-api-notion
+	url = git@github.com/graphql-api/graphql-api-notion.git
