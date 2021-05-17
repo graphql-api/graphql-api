@@ -24,7 +24,7 @@
 	url = https://jfabraxas@github.com/graphql-api/graphql-api.git
 [submodule "packages/api/infura"]
 	path = packages/api/infura
-	url = https://jfa-netlify-bot@github.com/graphql-api/graphql-api-infura
+	url = https://github.com/graphql-api/graphql-api-infura
 [submodule "packages/api/netlify"]
 	path = packages/api/netlify
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-netlify
@@ -42,4 +42,4 @@
 	url = https://github.com/graphql-api/graphql-api-symbl
 [submodule "packages/api/notion"]
 	path = packages/api/notion
-	url = https://jfa-netlify-bot@github.com/graphql-api/graphql-api-notion
+	url = https://github.com/graphql-api/graphql-api-notion
