@@ -3,7 +3,7 @@
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-textile
 [submodule "packages/api/rossum"]
 	path = packages/api/rossum
-	url = https://jfabraxas@github.com/graphql-api/graphql-api-rossum
+	url = https://github.com/graphql-api/graphql-api-rossum
 [submodule "packages/local/textile"]
 	path = packages/local/textile
 	url = https://jfabraxas@github.com/graphql-api/graphql-local-textile
@@ -13,15 +13,6 @@
 [submodule "packages/local/file-system-access"]
 	path = packages/local/file-system-access
 	url = https://jfabraxas@github.com/graphql-api/graphql-local-file-system-access
-[submodule "packages/local/space-storage"]
-	path = packages/local/space-storage
-	url = https://jfabraxas@github.com/graphql-api/graphql-local-space-storage
-[submodule "packages/api/nft-storage"]
-	path = packages/api/nft-storage
-	url = https://jfa-netlify-bot@github.com/graphql-api/graphql-api-nft-storage
-[submodule "packages/api/pinata"]
-	path = packages/api/pinata
-	url = https://jfabraxas@github.com/graphql-api/graphql-api.git
 [submodule "packages/api/infura"]
 	path = packages/api/infura
 	url = https://github.com/graphql-api/graphql-api-infura
