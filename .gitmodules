@@ -18,13 +18,13 @@
 	url = https://jfabraxas@github.com/graphql-api/graphql-local-space-storage
 [submodule "packages/api/nft-storage"]
 	path = packages/api/nft-storage
-	url = https://jfabraxas@github.com/graphql-api/graphql-api-nft-storage
+	url = https://jfa-netlify-bot@github.com/graphql-api/graphql-api-nft-storage
 [submodule "packages/api/pinata"]
 	path = packages/api/pinata
 	url = https://jfabraxas@github.com/graphql-api/graphql-api.git
 [submodule "packages/api/infura"]
 	path = packages/api/infura
-	url = https://jfabraxas@github.com/graphql-api/graphql-api.git
+	url = https://jfa-netlify-bot@github.com/graphql-api/graphql-api-infura
 [submodule "packages/api/netlify"]
 	path = packages/api/netlify
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-netlify
@@ -42,4 +42,4 @@
 	url = https://github.com/graphql-api/graphql-api-symbl
 [submodule "packages/api/notion"]
 	path = packages/api/notion
-	url = git@github.com/graphql-api/graphql-api-notion.git
+	url = https://jfa-netlify-bot@github.com/graphql-api/graphql-api-notion
