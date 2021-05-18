@@ -33,5 +33,8 @@ module.exports = withNx({
     // your project has type errors.
     // !! WARN !!
     ignoreBuildErrors: true
+  },
+  env: {
+    URL: process.env.URL
   }
 })

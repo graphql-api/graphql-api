@@ -1,8 +1,5 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-
-/next.config.js
-
 # dependencies
 /node_modules
 
@@ -51,9 +48,11 @@ yarn-error.log*
 
 # local env files
 .env.local
+.local.env
 .env.development.local
 .env.test.local
 .env.production.local
+.env
 
 # service-files
 .vercel
@@ -84,5 +83,4 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-.env
 credentials.json

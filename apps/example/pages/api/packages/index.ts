@@ -10,7 +10,7 @@ const gateway = new ApolloGateway({
   localServiceList: Object.entries(packages).map(([name, { typeDefs }]) => ({
     typeDefs,
     name,
-    url: `${process.env.ADDRESS}${basePath}/${name}`
+    url: `${process.env.URL}${basePath}/${name}`
   })),
   buildService: (definition) => {
     let willSendRequest
@@ -18,8 +18,9 @@ const gateway = new ApolloGateway({
       case 'notion':
         willSendRequest = function ({ request, context }) {
           const token =
-            context.notionToken === 'insert your token here'
-              ? process.env.NOTION_TOKEN_TEST
+            context.notionToken ===
+            'insert your token here "https://developers.notion.com/docs/authorization"'
+              ? process.env.NOTION_TEST_TOKEN
               : context.notionToken
           request.http.headers.set('Authorization', token)
         }
