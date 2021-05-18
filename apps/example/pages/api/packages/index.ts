@@ -17,7 +17,6 @@ const gateway = new ApolloGateway({
     switch (definition.name) {
       case 'notion':
         willSendRequest = function ({ request, context }) {
-          console.log('WILL SEND', context.notionToken)
           const token =
             context.notionToken === 'insert your token here'
               ? process.env.NOTION_TOKEN_TEST
