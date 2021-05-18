@@ -7,7 +7,7 @@
   "scripts": {
     "dev:example": "yarn nx serve example",
     "build:example": "yarn nx build example",
-    "build:example:netlify": "yarn nx build example --prod --outputPath=./NEXT",
+    "build:example:netlify": "yarn nx build example --prod --outputPath=.",
     "nx": "nx",
     "start": "nx serve",
     "build": "nx build",
