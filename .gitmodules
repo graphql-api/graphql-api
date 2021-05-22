@@ -3,7 +3,7 @@
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-textile
 [submodule "packages/api/rossum"]
 	path = packages/api/rossum
-	url = https://github.com/graphql-api/graphql-api-rossum
+	url = https://jfabraxas@github.com/graphql-api/graphql-api-rossum
 [submodule "packages/api/stripe"]
 	path = packages/api/stripe
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-stripe
