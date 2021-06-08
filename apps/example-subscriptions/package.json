@@ -1,0 +1,11 @@
+{
+  "name": "example-subscriptions",
+  "version": "0.0.1",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-datasource-rest": "^0.3.2",
+    "apollo-server-cloudflare": "^2.21.0",
+    "graphql": "^14.2.1"
+  },
+  "main": "./src/index.ts"
+}

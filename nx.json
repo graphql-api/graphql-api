@@ -17,7 +17,8 @@
     "api-youtube": { "tags": [] },
     "tools": { "tags": [] },
     "api-sftp": { "tags": [] },
-    "api-symbl": { "tags": [] }
+    "api-symbl": { "tags": [] },
+    "api-components-ai": { "tags": [] }
   },
   "workspaceLayout": { "appsDir": "apps", "libsDir": "packages" }
 }
