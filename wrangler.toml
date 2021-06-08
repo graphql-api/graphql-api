@@ -1,0 +1,11 @@
+account_id = "2ec7ee42def76b2fcb6febf980995c7f"
+name = "workers-graphql-server"
+route = ""
+type = "webpack"
+webpack_config = "apps/example-subscriptions/webpack.config.js"
+workers_dev = true
+zone_id = ""
+
+# kv-namespaces = [
+#   {binding = "WORKERS_GRAPHQL_CACHE", id = "gql_test"},
+# ]
