@@ -12,7 +12,7 @@
 	url = https://jfabraxas@github.com/graphql-api/graphql-local-file-system-access
 [submodule "packages/api/infura"]
 	path = packages/api/infura
-	url = https://github.com/graphql-api/graphql-api-infura
+	url = https://jfabraxas@github.com/graphql-api/graphql-api-infura
 [submodule "packages/api/netlify"]
 	path = packages/api/netlify
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-netlify
@@ -21,16 +21,16 @@
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-sevdesk
 [submodule "packages/api/youtube"]
 	path = packages/api/youtube
-	url = https://github.com/graphql-api/graphql-api-youtube
+	url = https://jfabraxas@github.com/graphql-api/graphql-api-youtube
 [submodule "packages/api/notion"]
 	path = packages/api/notion
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-notion
 [submodule "packages/api/sftp"]
 	path = packages/api/sftp
-	url = https://github.com/graphql-api/graphql-api-sftp
+	url = https://jfabraxas@github.com/graphql-api/graphql-api-sftp
 [submodule "packages/api/components-ai"]
 	path = packages/api/components-ai
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-components-ai
 [submodule "packages/api/slate-host"]
 	path = packages/api/slate-host
-	url = https://github.com/graphql-api/graphql-api-slate-host
+	url = https://jfabraxas@github.com/graphql-api/graphql-api-slate-host
