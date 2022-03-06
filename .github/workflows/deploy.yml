@@ -11,17 +11,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2.1.0
         with:
-          node-version: 'lts/*'
-          cache: 'npm'
-
-      - name: Build
-        run: |
-          npm run github:pages
+          version: 6.10.0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm run export wwww
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./out
+
+      # - name: Setup Node
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 'lts/*'
+      #     cache: 'npm'
+      # - name: Cache pnpm modules
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ~/.pnpm-store
+      #     key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-
+
+      # - uses: pnpm/action-setup@v2.1.0
+      #   with:
+      #     version: 6.0.2
+      #     run_install: true
+
+      
+
+      # - name: Build
+      #   run: |
+      #     npm run github:pages
+      # - name: Deploy
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+      #     publish_dir: ./out
