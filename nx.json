@@ -1,24 +1,50 @@
 {
   "implicitDependencies": {
-    "package.json": { "dependencies": "*", "devDependencies": "*" },
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
     ".eslintrc.json": "*"
   },
-  "affected": { "defaultBase": "master" },
+  "affected": {
+    "defaultBase": "master"
+  },
   "npmScope": "graphql-api",
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": { "cacheableOperations": ["build", "lint", "test", "e2e"] }
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
+      }
     }
   },
-  "projects": {
-    "example": { "tags": [] },
-    "api-stripe": { "tags": [] },
-    "api-youtube": { "tags": [] },
-    "tools": { "tags": [] },
-    "api-sftp": { "tags": [] },
-    "api-symbl": { "tags": [] },
-    "api-components-ai": { "tags": [] }
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "packages"
   },
-  "workspaceLayout": { "appsDir": "apps", "libsDir": "packages" }
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/next"
+  },
+  "generators": {
+    "@nrwl/react": {
+      "application": {
+        "babel": true
+      }
+    },
+    "@nrwl/next": {
+      "application": {
+        "style": "css",
+        "linter": "eslint"
+      }
+    }
+  },
+  "defaultProject": "example"
 }

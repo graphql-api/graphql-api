@@ -5,6 +5,7 @@ module.exports = {
     '<rootDir>/packages/api/youtube',
     '<rootDir>/packages/tools',
     '<rootDir>/packages/api/sftp',
-    '<rootDir>/packages/api/symbl'
+    '<rootDir>/packages/api/symbl',
+    '<rootDir>/apps/www'
   ]
 }

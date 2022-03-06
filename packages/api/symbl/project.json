@@ -1,0 +1,32 @@
+{
+  "root": "packages/api/symbl",
+  "sourceRoot": "packages/api/symbl/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["packages/api/symbl/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/api/symbl"],
+      "options": {
+        "jestConfig": "packages/api/symbl/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:package",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/api/symbl",
+        "tsConfig": "packages/api/symbl/tsconfig.lib.json",
+        "packageJson": "packages/api/symbl/package.json",
+        "main": "packages/api/symbl/src/index.ts",
+        "assets": ["packages/api/symbl/*.md"]
+      }
+    }
+  }
+}

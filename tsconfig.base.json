@@ -15,12 +15,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@graphql-api/notion": ["packages/api/notion/src/index.ts"],
+      "@graphql-api/sftp": ["packages/api/sftp/src/index.ts"],
       "@graphql-api/stripe": ["packages/api/stripe/src/index.ts"],
       "@graphql-api/stripe/*": ["packages/api/stripe/src/*"],
-      "@graphql-api/youtube": ["packages/api/youtube/src/index.ts"],
       "@graphql-api/tools": ["packages/tools/src/index.ts"],
-      "@graphql-api/sftp": ["packages/api/sftp/src/index.ts"],
-      "@graphql-api/notion": ["packages/api/notion/src/index.ts"]
+      "@graphql-api/youtube": ["packages/api/youtube/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
