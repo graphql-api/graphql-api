@@ -19,7 +19,7 @@ jobs:
           node-version: '14'
           cache: 'pnpm'
       - run: pnpm install
-      - run: pnpm run export wwww
+      - run: pnpm run export:wwww
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
