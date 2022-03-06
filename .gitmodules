@@ -31,3 +31,6 @@
 [submodule "packages/api/components-ai"]
 	path = packages/api/components-ai
 	url = https://jfabraxas@github.com/graphql-api/graphql-api-components-ai
+[submodule "packages/api/slate-host"]
+	path = packages/api/slate-host
+	url = https://github.com/graphql-api/graphql-api-slate-host

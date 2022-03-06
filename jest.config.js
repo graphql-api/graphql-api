@@ -6,6 +6,7 @@ module.exports = {
     '<rootDir>/packages/tools',
     '<rootDir>/packages/api/sftp',
     '<rootDir>/packages/api/symbl',
-    '<rootDir>/apps/www'
+    '<rootDir>/apps/www',
+    '<rootDir>/packages/api/slate-host'
   ]
 }

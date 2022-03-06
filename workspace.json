@@ -2,6 +2,7 @@
   "version": 2,
   "projects": {
     "api-sftp": "packages/api/sftp",
+    "api-slate-host": "packages/api/slate-host",
     "api-stripe": "packages/api/stripe",
     "api-symbl": "packages/api/symbl",
     "api-youtube": "packages/api/youtube",

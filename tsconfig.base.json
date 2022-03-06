@@ -17,6 +17,7 @@
     "paths": {
       "@graphql-api/notion": ["packages/api/notion/src/index.ts"],
       "@graphql-api/sftp": ["packages/api/sftp/src/index.ts"],
+      "@graphql-api/slate-host": ["packages/api/slate-host/src/index.ts"],
       "@graphql-api/stripe": ["packages/api/stripe/src/index.ts"],
       "@graphql-api/stripe/*": ["packages/api/stripe/src/*"],
       "@graphql-api/tools": ["packages/tools/src/index.ts"],
