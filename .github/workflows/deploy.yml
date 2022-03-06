@@ -19,8 +19,7 @@ jobs:
 
       - name: Build
         run: |
-          pnpm install
-          pnpm run export:www
+          npm run github:pages
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
