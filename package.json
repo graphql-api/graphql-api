@@ -8,8 +8,9 @@
     "node": ">=14",
     "pnpm": ">=6"
   },
+  "packageManager": "pnpm@6.32.2",
   "scripts": {
-    "github:pages": "npm install && npm run nx build www && npm run nx export www",
+    "github:pages:npm": "npm install && npm run nx build www && npm run nx export www",
     "build:www": "pnpm nx build www",
     "export:www": "pnpm nx export www",
     "dev:example": "pnpm nx serve example",
