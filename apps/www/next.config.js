@@ -11,7 +11,7 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
-  assetPrefix: isProd ? '/graphql-api.github.io/' : ''
+  assetPrefix: isProd ? '/graphql-api/' : ''
 }
 
 module.exports = withNx(nextConfig)
