@@ -8,7 +8,6 @@ module.exports = {
     '<rootDir>/packages/api/symbl',
     '<rootDir>/apps/www',
     '<rootDir>/packages/api/slate-host',
-    '<rootDir>/packages/api/components-ai',
-    '<rootDir>/packages/api/infura'
+    '<rootDir>/packages/api/components-ai'
   ]
 }
