@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@graphql-api/components-ai": ["packages/api/components-ai/src/index.ts"],
+      "@graphql-api/infura": ["packages/api/infura/src/index.ts"],
       "@graphql-api/notion": ["packages/api/notion/src/index.ts"],
       "@graphql-api/sftp": ["packages/api/sftp/src/index.ts"],
       "@graphql-api/slate-host": ["packages/api/slate-host/src/index.ts"],

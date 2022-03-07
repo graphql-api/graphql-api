@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          token: ${{ secrets.ACCESS_SUBMODULES }}
           submodules: true
       - uses: pnpm/action-setup@v2.1.0
         with:
@@ -21,12 +22,13 @@ jobs:
           node-version: '14'
           cache: 'pnpm'
       - run: pnpm install
+      - run: pnpm run build:www
       - run: pnpm run export:www
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: ./out
+          deploy_key: ${{ secrets.ACCESS_SUBMODULES }} # ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_dir: ./dist/apps/www/.next
 
       # - name: Setup Node
       #   uses: actions/setup-node@v3

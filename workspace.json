@@ -2,6 +2,7 @@
   "version": 2,
   "projects": {
     "api-components-ai": "packages/api/components-ai",
+    "api-infura": "packages/api/infura",
     "api-sftp": "packages/api/sftp",
     "api-slate-host": "packages/api/slate-host",
     "api-stripe": "packages/api/stripe",
