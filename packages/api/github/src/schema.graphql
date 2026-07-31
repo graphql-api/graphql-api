@@ -1,0 +1,14 @@
+type Query {
+  viewer: User
+  repository(owner: String!, name: String!): Repository
+}
+
+type User {
+  login: String!
+  id: ID!
+}
+
+type Repository {
+  name: String!
+  owner: User!
+}
