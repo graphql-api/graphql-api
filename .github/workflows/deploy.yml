@@ -6,32 +6,51 @@ on:
       - master
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+
 jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
+      # Use the default GITHUB_TOKEN (persist-credentials: true) for normal checkout.
+      # If your submodules are private in other repos, create a PAT with repo scope
+      # and set it as the ACCESS_SUBMODULES secret, then uncomment the `token:` line below.
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.ACCESS_SUBMODULES }}
           submodules: true
+          fetch-depth: 0
+          persist-credentials: true
+          token: ${{ secrets.ACCESS_SUBMODULES }}  # optional: use only if needed for private submodules
+
       - uses: pnpm/action-setup@v2.1.0
         with:
           version: 6.10.0
-      - uses: actions/setup-node@v2
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: '18'
           cache: 'pnpm'
+
       - run: pnpm install
       - run: pnpm run build:www
       - run: pnpm run export:www
       - run: pnpm run build:example
+      
       # GITHUB PAGES
+      # Deploy to an external Pages repository — requires a PAT (cannot use GITHUB_TOKEN)
       - name: Deploy To Github Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
+        # personal_token: ${{ secrets.PAGES_PAT }}             # REQUIRED: PAT with repo permission to push to external repo
           personal_token: ${{ secrets.ACCESS_SUBMODULES }}
           publish_dir: ./dist/apps/www/exported
           external_repository: graphql-api/graphql-api.github.io
+          publish_branch: gh-pages
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+      
       # NETLIFY
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.2
