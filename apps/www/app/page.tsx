@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Boxes, GitBranch, Github, Network, Sparkles } from 'lucide-react'
+import { ArrowRight, Boxes, GitBranch, Network, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -46,7 +46,7 @@ export default function HomePage() {
             </Button>
             <Button asChild size="lg" variant="outline">
               <a href="https://github.com/graphql-api/graphql-api" target="_blank" rel="noreferrer">
-                <Github className="size-4" /> GitHub
+                GitHub
               </a>
             </Button>
           </div>
