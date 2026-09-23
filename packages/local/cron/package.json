@@ -1,6 +1,6 @@
 {
   "name": "@graphql-local/cron",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local GraphQL cron scheduling with pluggable storage and event streams",
   "type": "module",
   "sideEffects": false,
