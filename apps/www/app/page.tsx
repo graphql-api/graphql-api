@@ -7,17 +7,20 @@ const pillars = [
   {
     icon: Network,
     title: 'Schema first',
-    description: 'Portable GraphQL SDL and generated types remain the contract, independent of a specific server.',
+    description:
+      'Portable GraphQL SDL and generated types remain the contract, independent of a specific server.',
   },
   {
     icon: Boxes,
     title: 'Composable packages',
-    description: 'Integrations expose explicit runtime capabilities and can opt into Federation 2 when deployment needs it.',
+    description:
+      'Integrations expose explicit runtime capabilities and can opt into Federation 2 when deployment needs it.',
   },
   {
     icon: GitBranch,
     title: 'Git-native delivery',
-    description: 'Source, release metadata and migration history stay reviewable and reproducible from Git.',
+    description:
+      'Source, release metadata and migration history stay reviewable and reproducible from Git.',
   },
 ]
 
@@ -32,17 +35,22 @@ export default function HomePage() {
         </div>
 
         <div className="max-w-4xl">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.28em] text-primary">graphql-api</p>
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.28em] text-primary">
+            graphql-api
+          </p>
           <h1 className="text-balance text-5xl font-semibold tracking-[-0.04em] sm:text-6xl lg:text-7xl">
             Small GraphQL integrations.
             <span className="block text-muted-foreground">Clear contracts. Modern runtimes.</span>
           </h1>
           <p className="mt-7 max-w-2xl text-pretty text-lg leading-8 text-muted-foreground">
-            A public workspace for reusable API wrappers, browser-local GraphQL utilities, schema tooling and optional Federation 2 composition.
+            A public workspace for reusable API wrappers, browser-local GraphQL utilities, schema
+            tooling and optional Federation 2 composition.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link href="/docs">Read the docs <ArrowRight className="size-4" /></Link>
+              <Link href="/docs">
+                Read the docs <ArrowRight className="size-4" />
+              </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <a href="https://github.com/graphql-api/graphql-api" target="_blank" rel="noreferrer">
@@ -69,10 +77,18 @@ export default function HomePage() {
 
         <section className="mt-6 rounded-xl border border-border/80 bg-card/40 p-6 font-mono text-sm text-muted-foreground">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            <span><span className="text-primary">runtime</span> node · edge · browser</span>
-            <span><span className="text-primary">schema</span> GraphQL SDL</span>
-            <span><span className="text-primary">composition</span> Federation optional</span>
-            <span><span className="text-primary">release</span> OIDC + provenance next</span>
+            <span>
+              <span className="text-primary">runtime</span> node · edge · browser
+            </span>
+            <span>
+              <span className="text-primary">schema</span> GraphQL SDL
+            </span>
+            <span>
+              <span className="text-primary">composition</span> Federation optional
+            </span>
+            <span>
+              <span className="text-primary">release</span> OIDC + provenance next
+            </span>
           </div>
         </section>
       </div>
