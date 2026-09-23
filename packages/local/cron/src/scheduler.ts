@@ -21,7 +21,7 @@ export function validateCronExpression(expression: string): boolean {
   }
 }
 
-export function nextCronRun(expression: string, currentDate = new Date()): Date {
+export function nextCronRun(expression: string, currentDate: Date = new Date()): Date {
   return CronExpressionParser.parse(expression, { currentDate }).next().toDate()
 }
 
