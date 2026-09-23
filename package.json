@@ -11,8 +11,9 @@
   "scripts": {
     "dev": "turbo dev --filter=@graphql-api/docs",
     "build": "turbo build",
-    "lint": "biome check .",
+    "lint": "biome lint .",
     "format": "biome format --write .",
+    "format:check": "biome format .",
     "typecheck": "turbo typecheck",
     "check": "pnpm lint && pnpm typecheck && pnpm build",
     "docs": "pnpm --filter @graphql-api/docs dev",
