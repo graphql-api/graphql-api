@@ -1,86 +1,16 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
-.ssh
-# dependencies
-/node_modules
-
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-
-# compiled output
-/dist
-/tmp
-/out-tsc
-
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env.local
-.local.env
-.env.development.local
-.env.test.local
-.env.production.local
+node_modules/
+.pnpm-store/
+.next/
+out/
+.source/
+.turbo/
 .env
-
-# service-files
-.vercel
-.netlify
-
-# next-pwa
-/public/workbox-*.js
-/public/sw.js
-
-# prefer yarn than npm
-package-lock.json
-
-report.*.json
-
-# .vscode Debugging
-.vscode/*-debug-profile
-
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
-
-# System Files
+.env.*
+!.env.example
+*.log
 .DS_Store
-Thumbs.db
-credentials.json
+.idea/
+.vscode/*
+!.vscode/extensions.json
+coverage/
+.vercel/

@@ -1,21 +1,51 @@
-# [graphql-api](https://grphqlpi.netlify.app/api/packages)
+# GraphQL API
 
-collection of graphql api wrappers
+A modern, schema-first home for reusable GraphQL integrations.
 
+> **2026 modernization:** the active workspace is being rebuilt on current Node, pnpm, TypeScript, Next.js, React, Fumadocs and shadcn/ui. Historical integrations remain available in Git history until each package is validated against its current upstream API and migrated deliberately.
 
-[example](https://grphqlpi.netlify.app/api/package)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/68af520e-87e4-410b-86d5-11df4d555033/deploy-status)](https://app.netlify.com/sites/grphqlpi/deploys)
+## Stack
 
+- Node.js 24+
+- pnpm 12
+- Turborepo
+- TypeScript 7
+- Next.js 16 + React 19
+- Fumadocs
+- shadcn/ui + Tailwind CSS 4
+- dark mode only
 
+## Workspace
 
+```text
+apps/
+└── www/        # public docs and project landing page
+packages/       # historical integration sources; migrated package-by-package
+legacy/         # modernization notes and boundaries
+```
 
+The active pnpm workspace intentionally starts with the documentation app only. Legacy Nx projects are not treated as current-compatible merely because their source exists in the repository.
 
+## Development
 
+```bash
+corepack enable
+pnpm install
+pnpm check
+pnpm docs
+```
 
-[] https://dev.to/ayumitamai97/continuously-generate-typescript-typings-from-graphql-schema-across-multiple-repositories-37ab
+## Package modernization order
 
-https://github.com/vercel/next.js/tree/canary/examples/with-typescript-graphql
+1. `@graphql-local/cron`
+2. `@graphql-api/stackblitz`
+3. `@graphql-local/file-system-access`
+4. one current server/API integration such as Rossum, Stripe or Notion
 
-https://www.graphql-modules.com/docs/api#context
+Published integrations should expose deterministic GraphQL SDL, generated resolver types, explicit runtime capabilities, explicit configuration and tests. Federation remains optional per package.
 
-https://www.apollographql.com/blog/apollo-server-file-upload-best-practices-1e7f24cdc050/
+## Publishing
+
+Publishing is intentionally not enabled by this commit. Before the first release we will verify npm scope ownership, add Changesets, configure npm Trusted Publishing through OIDC, enable provenance, and make schema/build checks mandatory in release CI.
+
+See [MODERNIZATION.md](./MODERNIZATION.md) and the docs app for details.

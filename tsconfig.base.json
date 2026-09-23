@@ -1,30 +1,15 @@
 {
-  "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "target": "ES2024",
+    "lib": ["DOM", "DOM.Iterable", "ES2024"],
+    "strict": true,
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@graphql-api/components-ai": ["packages/api/components-ai/src/index.ts"],
-      "@graphql-api/infura": ["packages/api/infura/src/index.ts"],
-      "@graphql-api/notion": ["packages/api/notion/src/index.ts"],
-      "@graphql-api/sftp": ["packages/api/sftp/src/index.ts"],
-      "@graphql-api/slate-host": ["packages/api/slate-host/src/index.ts"],
-      "@graphql-api/stripe": ["packages/api/stripe/src/index.ts"],
-      "@graphql-api/stripe/*": ["packages/api/stripe/src/*"],
-      "@graphql-api/tools": ["packages/tools/src/index.ts"],
-      "@graphql-api/youtube": ["packages/api/youtube/src/index.ts"]
-    }
-  },
-  "exclude": ["node_modules", "tmp"]
+    "forceConsistentCasingInFileNames": true
+  }
 }

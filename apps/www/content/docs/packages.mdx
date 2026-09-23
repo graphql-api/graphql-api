@@ -1,0 +1,23 @@
+---
+title: Packages
+description: Migration status for the public GraphQL API organization.
+---
+
+The organization contains packages from several generations. Presence in GitHub does not imply current
+upstream compatibility.
+
+| Package/repository | Migration intent |
+| --- | --- |
+| `graphql-local-cron` | First reference package; modern tooling already present |
+| `graphql-api-stackblitz` | Second reference integration; repair copied metadata and server coupling |
+| `graphql-local-file-system-access` | Browser-local reference package |
+| `graphql-api-rossum` | Candidate current server integration after upstream API validation |
+| `graphql-api-stripe` | Validate current Stripe API/schema before revival |
+| `graphql-api-notion` | Rewrite against current Notion API/client if retained |
+| `graphql-api-youtube` | Validate scopes/quota and choose a deliberate supported surface |
+| `graphql-api-sftp` | Node-only/security-sensitive boundary if retained |
+| Infura / Netlify / Vercel skeletons | Archive or redefine only after use-case review |
+| Textile | Historical ecosystem review required before migration |
+
+The first migrations will establish the shared contract and build/release template. Packages are added
+to the pnpm workspace only when they can pass their own reproducible verification.

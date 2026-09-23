@@ -1,0 +1,31 @@
+---
+title: Publishing
+description: Release requirements before the first modern public package is published.
+---
+
+Publishing is the next phase after the workspace and reference packages verify cleanly.
+
+## Required gates
+
+1. Verify ownership/history of the `@graphql-api` and `@graphql-local` npm scopes.
+2. Add Changesets for package-level release intent and changelogs.
+3. Configure npm Trusted Publishing via OIDC.
+4. Publish provenance with releases and keep long-lived npm write tokens out of normal CI.
+5. Validate exported GraphQL SDL and generated resolver types.
+6. Run unit tests plus opt-in credentialed smoke tests for upstream APIs.
+7. Record the package version, Git commit, schema artifact and docs URL in the public catalog.
+
+## Release flow
+
+```text
+feature PR
+  -> local + CI verification
+  -> changeset
+  -> release PR
+  -> merge
+  -> npm trusted publish (OIDC)
+  -> provenance + release metadata
+```
+
+GitHub Packages can remain an optional secondary registry. The public package workflow should not require
+GitHub-specific registry authentication when npmjs can provide the canonical package.

@@ -1,6 +1,6 @@
 [submodule "packages/api/textile"]
 	path = packages/api/textile
-	url = https://github.com/graphql-api/graphql-api-textile
+	url = https://github.com/graphql-api/graphql-iso-textile
 [submodule "packages/api/rossum"]
 	path = packages/api/rossum
 	url = https://github.com/graphql-api/graphql-api-rossum
@@ -28,9 +28,3 @@
 [submodule "packages/api/sftp"]
 	path = packages/api/sftp
 	url = https://github.com/graphql-api/graphql-api-sftp
-[submodule "packages/api/components-ai"]
-	path = packages/api/components-ai
-	url = https://github.com/graphql-api/graphql-api-components-ai
-[submodule "packages/api/slate-host"]
-	path = packages/api/slate-host
-	url = https://github.com/graphql-api/graphql-api-slate-host

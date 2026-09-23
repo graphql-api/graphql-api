@@ -1,0 +1,31 @@
+---
+title: Introduction
+description: The modern GraphQL API workspace and its migration boundary.
+---
+
+GraphQL API is being rebuilt as a public, schema-first integration workspace. The goal is to publish
+small reusable packages without forcing consumers into one GraphQL server, gateway or hosting provider.
+
+## Principles
+
+- **Schema first.** SDL and generated types are durable interfaces.
+- **Runtime explicit.** Packages declare whether they support Node.js, edge runtimes, browsers, or a subset.
+- **Federation optional.** Federation 2 is an adapter for composition, not a requirement for every package.
+- **Config explicit.** Integrations receive credentials/configuration from their host instead of hiding process-global state.
+- **Git native.** Package, schema and release history remain reviewable in Git.
+- **Short-lived publishing identity.** Releases will use npm Trusted Publishing/OIDC rather than shared long-lived tokens.
+
+## Modernization boundary
+
+The previous root workspace used Nx 13, Next.js 12, React 17, GraphQL 15 and Apollo Federation 0.x.
+Those applications and project definitions are intentionally excluded from the active workspace.
+Historical code remains available in Git while each integration is validated and migrated independently.
+
+## Current workspace
+
+```text
+apps/www      Next.js 16 + Fumadocs + shadcn/ui documentation
+packages/*    integration sources awaiting package-by-package migration
+```
+
+Continue with [Architecture](/docs/architecture) or see the [package migration map](/docs/packages).
