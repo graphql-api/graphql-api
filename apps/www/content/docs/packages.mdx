@@ -1,23 +1,20 @@
 ---
 title: Packages
-description: Migration status for the public GraphQL API organization.
+description: Live migration catalog for every repository/package in the GraphQL API organization.
 ---
 
-The organization contains packages from several generations. Presence in GitHub does not imply current
-upstream compatibility.
+The organization is being modernized deliberately rather than treating repository presence as support.
+The catalog below records the **migration state independently from npm publication state**.
 
-| Package/repository | Migration intent |
-| --- | --- |
-| `graphql-local-cron` | First reference package; modern tooling already present |
-| `graphql-api-stackblitz` | Second reference integration; repair copied metadata and server coupling |
-| `graphql-local-file-system-access` | Browser-local reference package |
-| `graphql-api-rossum` | Candidate current server integration after upstream API validation |
-| `graphql-api-stripe` | Validate current Stripe API/schema before revival |
-| `graphql-api-notion` | Rewrite against current Notion API/client if retained |
-| `graphql-api-youtube` | Validate scopes/quota and choose a deliberate supported surface |
-| `graphql-api-sftp` | Node-only/security-sensitive boundary if retained |
-| Infura / Netlify / Vercel skeletons | Archive or redefine only after use-case review |
-| Textile | Historical ecosystem review required before migration |
+Status meanings:
 
-The first migrations will establish the shared contract and build/release template. Packages are added
-to the pnpm workspace only when they can pass their own reproducible verification.
+- **reference** — selected to prove the modern package contract;
+- **migrate** — implementation worth porting onto current contracts;
+- **audit** — upstream API/protocol must be verified before code migration;
+- **repair** — repository/package identity is currently incorrect or copied;
+- **scaffold** — incomplete/non-package repository;
+- **historical** — useful evidence, but not a supported release target in its current form.
+
+Every card includes a small animated data-flow diagram and an **illustrative modernization target**. Those examples deliberately do not claim that the legacy package already exposes that exact field.
+
+<PackageCatalog />
