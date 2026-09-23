@@ -26,7 +26,9 @@ export function nextCronRun(expression: string, currentDate: Date = new Date()):
 }
 
 function defaultId(): string {
-  return globalThis.crypto?.randomUUID?.() ?? `cron-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  return (
+    globalThis.crypto?.randomUUID?.() ?? `cron-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  )
 }
 
 export class CronScheduler {
@@ -299,9 +301,7 @@ export class CronScheduler {
         ...running,
         status: shouldRetry ? JobStatus.Scheduled : JobStatus.Failed,
         retryAttempts,
-        nextRun: shouldRetry
-          ? new Date(failedAt.getTime() + delay).toISOString()
-          : running.nextRun,
+        nextRun: shouldRetry ? new Date(failedAt.getTime() + delay).toISOString() : running.nextRun,
         lastError: error instanceof Error ? error.message : String(error),
         updatedAt: failedAt.toISOString(),
       }
@@ -330,7 +330,10 @@ export class CronScheduler {
     if (!validateCronExpression(input.schedule)) {
       throw new Error(`Invalid cron expression: ${input.schedule}`)
     }
-    if (input.maxRetries !== undefined && (!Number.isInteger(input.maxRetries) || input.maxRetries < 0)) {
+    if (
+      input.maxRetries !== undefined &&
+      (!Number.isInteger(input.maxRetries) || input.maxRetries < 0)
+    ) {
       throw new Error('maxRetries must be a non-negative integer')
     }
   }

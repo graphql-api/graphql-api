@@ -17,7 +17,9 @@ function parseJsonLiteral(node: ValueNode): JsonValue {
     case Kind.LIST:
       return node.values.map(parseJsonLiteral)
     case Kind.OBJECT:
-      return Object.fromEntries(node.fields.map((field) => [field.name.value, parseJsonLiteral(field.value)]))
+      return Object.fromEntries(
+        node.fields.map((field) => [field.name.value, parseJsonLiteral(field.value)]),
+      )
     default:
       throw new TypeError(`Unsupported JSON literal kind: ${node.kind}`)
   }
@@ -214,10 +216,8 @@ export function createResolvers(scheduler: CronScheduler): CronResolverMap {
     Mutation: {
       createJob: (_parent: unknown, { input }: { input: CronJobInput }) =>
         scheduler.createJob(input),
-      updateJob: (
-        _parent: unknown,
-        { id, input }: { id: string; input: CronJobInput },
-      ) => scheduler.updateJob(id, input),
+      updateJob: (_parent: unknown, { id, input }: { id: string; input: CronJobInput }) =>
+        scheduler.updateJob(id, input),
       deleteJob: (_parent: unknown, { id }: { id: string }) => scheduler.deleteJob(id),
       pauseJob: (_parent: unknown, { id }: { id: string }) => scheduler.pauseJob(id),
       resumeJob: (_parent: unknown, { id }: { id: string }) => scheduler.resumeJob(id),
@@ -226,7 +226,11 @@ export function createResolvers(scheduler: CronScheduler): CronResolverMap {
     Subscription: {
       jobStatusChanged: {
         subscribe: () =>
-          projectEvents(scheduler, ['created', 'updated', 'started', 'paused', 'resumed'], 'jobStatusChanged'),
+          projectEvents(
+            scheduler,
+            ['created', 'updated', 'started', 'paused', 'resumed'],
+            'jobStatusChanged',
+          ),
       },
       jobCompleted: {
         subscribe: () => projectEvents(scheduler, ['completed'], 'jobCompleted'),
