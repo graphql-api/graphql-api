@@ -1,7 +1,14 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
   "files": {
-    "includes": ["apps/www/**", "package.json", "turbo.json", "tsconfig.base.json", "tsconfig.json", "biome.json"]
+    "includes": [
+      "apps/www/**",
+      "package.json",
+      "turbo.json",
+      "tsconfig.base.json",
+      "tsconfig.json",
+      "biome.json"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -11,7 +18,9 @@
   },
   "linter": {
     "enabled": true,
-    "rules": { "recommended": true }
+    "rules": {
+      "preset": "recommended"
+    }
   },
   "javascript": {
     "formatter": {
@@ -19,6 +28,17 @@
       "semicolons": "asNeeded"
     }
   },
-  "json": { "formatter": { "enabled": true } },
-  "css": { "formatter": { "enabled": true } }
+  "json": {
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    },
+    "formatter": {
+      "enabled": true
+    }
+  }
 }
