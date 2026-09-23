@@ -1,7 +1,6 @@
 import { GraphQLScalarType, Kind, type ValueNode } from 'graphql'
-import { validateCronExpression } from './scheduler'
-import type { CronEventType, JsonValue } from './types'
-import { JobStatus, type CronScheduler } from './index'
+import { type CronScheduler, validateCronExpression } from './scheduler'
+import { type CronEventType, type JsonValue, JobStatus } from './types'
 
 function parseJsonLiteral(node: ValueNode): JsonValue {
   switch (node.kind) {
