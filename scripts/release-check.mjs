@@ -8,12 +8,15 @@ const projects = JSON.parse(
   }),
 )
 
-const publishable = projects.filter((project) => project.name && !project.private && project.name !== 'graphql-api')
+const publishable = projects.filter(
+  (project) => project.name && !project.private && project.name !== 'graphql-api',
+)
 const errors = []
 
 for (const project of publishable) {
   const manifest = JSON.parse(readFileSync(join(project.path, 'package.json'), 'utf8'))
-  const repository = typeof manifest.repository === 'string' ? manifest.repository : manifest.repository?.url
+  const repository =
+    typeof manifest.repository === 'string' ? manifest.repository : manifest.repository?.url
   const hasCanonicalRepository =
     typeof repository === 'string' &&
     /github\.com[/:]graphql-api\/graphql-api(?:\.git)?$/.test(repository.replace(/^git\+/, ''))
