@@ -1,0 +1,178 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.105 0.008 285);
+  --foreground: oklch(0.965 0.005 285);
+  --card: oklch(0.145 0.01 285);
+  --card-foreground: oklch(0.965 0.005 285);
+  --popover: oklch(0.145 0.01 285);
+  --popover-foreground: oklch(0.965 0.005 285);
+  --primary: oklch(0.78 0.15 160);
+  --primary-foreground: oklch(0.12 0.025 160);
+  --secondary: oklch(0.19 0.012 285);
+  --secondary-foreground: oklch(0.94 0.005 285);
+  --muted: oklch(0.19 0.012 285);
+  --muted-foreground: oklch(0.68 0.01 285);
+  --accent: oklch(0.22 0.02 160);
+  --accent-foreground: oklch(0.94 0.01 160);
+  --destructive: oklch(0.64 0.22 25);
+  --border: oklch(0.26 0.012 285);
+  --input: oklch(0.26 0.012 285);
+  --ring: oklch(0.72 0.14 160);
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+* {
+  border-color: var(--border);
+}
+html {
+  color-scheme: dark;
+  background: var(--background);
+}
+body {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+::selection {
+  background: color-mix(in oklab, var(--primary) 42%, transparent);
+}
+
+.package-flow {
+  position: relative;
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+}
+.package-flow__rail {
+  position: absolute;
+  inset: 0.42rem 7% auto;
+  height: 1px;
+  overflow: visible;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border) 10%,
+    var(--primary) 50%,
+    var(--border) 90%,
+    transparent
+  );
+}
+.package-flow__pulse {
+  position: absolute;
+  top: -0.24rem;
+  left: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 1rem color-mix(in oklab, var(--primary) 80%, transparent);
+  animation: package-flow-pulse 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+.package-flow__nodes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.package-flow__node {
+  position: relative;
+  z-index: 1;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--background);
+  padding: 0.35rem 0.55rem;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.68rem;
+  color: var(--muted-foreground);
+}
+.package-status {
+  border-radius: 999px;
+  padding: 0.14rem 0.45rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.65rem;
+  border: 1px solid var(--border);
+}
+.package-status--reference {
+  color: oklch(0.83 0.15 150);
+  background: oklch(0.22 0.04 150);
+}
+.package-status--migrate {
+  color: oklch(0.82 0.12 240);
+  background: oklch(0.2 0.04 240);
+}
+.package-status--audit {
+  color: oklch(0.84 0.14 80);
+  background: oklch(0.22 0.04 80);
+}
+.package-status--repair {
+  color: oklch(0.8 0.16 25);
+  background: oklch(0.21 0.05 25);
+}
+.package-status--scaffold {
+  color: var(--muted-foreground);
+  background: var(--muted);
+}
+.package-status--historical {
+  color: oklch(0.8 0.11 305);
+  background: oklch(0.21 0.04 305);
+}
+
+@keyframes package-flow-pulse {
+  0% {
+    left: 0;
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  10% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 0.5rem);
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .package-flow__pulse {
+    animation: none;
+    left: 50%;
+  }
+}

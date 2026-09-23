@@ -1,0 +1,72 @@
+---
+title: Publishing
+description: Changesets, release gates and npm Trusted Publishing with OIDC/provenance.
+---
+
+The modern workspace deliberately separates **version planning** from **registry publication**.
+
+## Release contract
+
+Every public package must:
+
+- live in the active pnpm workspace;
+- use an `@graphql-api/*` or `@graphql-local/*` name;
+- have a non-placeholder version;
+- set `repository.url` to this public GitHub repository;
+- set `publishConfig.access` to `public`;
+- expose a deterministic `check` script;
+- pass the root frozen-lockfile CI.
+
+`pnpm release:check` enforces the manifest part of this contract.
+
+## Changesets
+
+Add release intent in the feature PR:
+
+```bash
+pnpm changeset
+pnpm changeset:status
+```
+
+After merge to `master`, **Release PR** uses Changesets 3 to create or update the version/changelog pull request. The action does not publish packages by itself.
+
+## Trusted Publishing
+
+The **Publish package** workflow accepts one exact workspace package name, verifies the whole workspace, verifies the selected package, inspects the npm tarball, then executes `npm publish --access public`.
+
+The workflow intentionally has:
+
+```yaml
+permissions:
+  contents: read
+  id-token: write
+```
+
+There is no `NPM_TOKEN` in the design. npm exchanges the GitHub OIDC identity for a short-lived publishing credential.
+
+### npm account configuration
+
+For each package that already exists on npm, configure a Trusted Publisher with:
+
+- provider: GitHub Actions
+- organization: `graphql-api`
+- repository: `graphql-api`
+- workflow filename: `publish.yml`
+- allow direct `npm publish`
+
+The account/package-side configuration cannot be inferred from repository permissions, so it remains an explicit external gate.
+
+## Provenance
+
+Trusted Publishing from this public repository generates npm provenance automatically. The workflow also leaves `NPM_CONFIG_PROVENANCE=true` explicit so the intended release policy is visible in code.
+
+## First publish sequence
+
+1. migrate `@graphql-local/cron` into the active workspace;
+2. verify the existing npm package owner/maintainer state;
+3. configure `publish.yml` as its Trusted Publisher;
+4. add a changeset and merge the release PR;
+5. invoke **Publish package** with `@graphql-local/cron`;
+6. verify npm version, provenance and Git commit before migrating the next package.
+
+Do not enable bulk publication until at least one package has completed this cycle end-to-end.

@@ -1,0 +1,47 @@
+---
+title: Content-addressed snapshots
+description: A deterministic IPLD/CAR snapshot format derived from Clawier's provider-neutral Git snapshots.
+---
+
+Clawier already proves useful snapshot constraints: provider-neutral Git adapters, content-identical no-ops, secret-safe serialization, excluded-path reporting, optional encryption and history.
+
+The portable boundary should move **one layer below Git**.
+
+## Proposed format
+
+1. normalize included files and address their bytes;
+2. build a canonical DAG-CBOR manifest;
+3. reference files/blocks with CIDv1;
+4. optionally export the reachable DAG as CAR;
+5. publish the same root CID through Git, object storage, IPFS or an agent artifact.
+
+```ts
+interface SnapshotManifest {
+  version: 1
+  createdAt: string
+  root: CID
+  files: Array<{
+    path: string
+    cid: CID
+    size: number
+    mediaType?: string
+  }>
+  excluded: string[]
+  provenance?: Record<string, unknown>
+}
+```
+
+## Determinism
+
+The package must define path normalization, file ordering, canonical encoding, chunking profile, symlink/file-mode policy and ignore rules. Two snapshots of the same normalized input/config should yield the same root CID.
+
+## Privacy and encryption
+
+Private blocks can be encrypted **before** content addressing, producing CIDs for ciphertext. Never put raw keys, credentials or secret file contents in the manifest. Public/redacted/private groups can still be linked through content identities.
+
+## Proposed packages
+
+- `@graphql-api/ipld` — CID scalar + IPLD helpers;
+- `@graphql-api/car` — CAR streaming/read/write;
+- `@graphql-api/snapshot` — deterministic manifest and serializer contract;
+- `@graphql-api/ucan` — optional capability checks for snapshot read/write/delegate.

@@ -1,0 +1,68 @@
+name: Publish package
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Exact workspace package name, for example @graphql-local/cron
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-${{ inputs.package }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.6.0
+          run_install: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify release manifests
+        run: pnpm release:check
+
+      - name: Resolve selected workspace package
+        id: package
+        env:
+          PACKAGE_NAME: ${{ inputs.package }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACKAGE_DIR="$(pnpm --filter "$PACKAGE_NAME" exec node -e 'console.log(process.cwd())')"
+          test -n "$PACKAGE_DIR"
+          echo "dir=$PACKAGE_DIR" >> "$GITHUB_OUTPUT"
+
+      - name: Verify selected package
+        env:
+          PACKAGE_NAME: ${{ inputs.package }}
+        run: pnpm --filter "$PACKAGE_NAME" run check
+
+      - name: Inspect publish tarball
+        working-directory: ${{ steps.package.outputs.dir }}
+        run: npm pack --dry-run
+
+      - name: Publish with npm Trusted Publishing
+        working-directory: ${{ steps.package.outputs.dir }}
+        env:
+          NPM_CONFIG_PROVENANCE: "true"
+        run: npm publish --access public

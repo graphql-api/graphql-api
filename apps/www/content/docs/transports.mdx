@@ -1,0 +1,47 @@
+---
+title: Streaming and Workers
+description: SSE, WebSocket, incremental GraphQL delivery and worker-to-worker transfer.
+---
+
+## Keep transport concerns separate
+
+### WebSocket subscriptions
+
+Use the current `graphql-transport-ws` protocol for long-lived interactive subscriptions and multiple interleaved operations.
+
+### GraphQL over SSE
+
+SSE is a strong default for server-to-client progress, CI/log streams and agent operation events. It is simple to consume in browsers and fits ordinary HTTP infrastructure.
+
+### Incremental query delivery
+
+Incremental `@defer` / `@stream` response delivery is not a subscription. Use it for progressively returning one operation's expensive or large response.
+
+### Raw bytes
+
+Do not put large CAR files, uploads or artifact byte streams into GraphQL JSON. GraphQL should return authorized artifact/stream handles; transfer bytes through HTTP streams, object storage, Worker RPC or IPFS.
+
+## Worker transfer
+
+A provider-neutral worker contract should describe capabilities rather than Cloudflare-specific bindings:
+
+```ts
+interface WorkerTransferAdapter {
+  invoke<TIn, TOut>(target: WorkerTarget, method: string, input: TIn): Promise<TOut>
+  fetch?(target: WorkerTarget, request: Request): Promise<Response>
+  stream?(
+    target: WorkerTarget,
+    input: ReadableStream<Uint8Array>,
+  ): Promise<ReadableStream<Uint8Array>>
+}
+```
+
+Cloudflare's Service Bindings/RPC can implement this efficiently, including Request/Response and byte-stream transfer. Other providers remain adapters rather than contaminating the shared schema.
+
+## Resume semantics
+
+A reconnectable transport is not automatically a replayable stream. Declare one of:
+
+- ephemeral — only new events after reconnect;
+- bounded replay — `after` cursor over retained events;
+- durable — queue/log-backed replay.

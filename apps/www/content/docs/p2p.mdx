@@ -1,0 +1,47 @@
+---
+title: P2P artifact cache
+description: A verified bridge between WebTorrent transfer and IPFS/IPLD content addressing.
+---
+
+BitTorrent/WebTorrent and IPFS/libp2p are **not the same protocol**. Magnet/infohash identifiers must not be presented as CIDs.
+
+A useful bridge verifies data at both boundaries:
+
+```text
+magnet / torrent
+      │
+      ▼
+WebTorrent stream ── verify torrent pieces
+      │
+      ▼
+normalization + chunking
+      │
+      ▼
+IPLD / UnixFS blocks ── verify CIDs
+      │
+      ▼
+CAR + root CID
+   ├── Helia/libp2p provide
+   ├── gateway/object cache
+   └── optional WebTorrent seed
+```
+
+## Mapping manifest
+
+```ts
+interface SwarmMapping {
+  version: 1
+  rootCid: string
+  magnetURI?: string
+  infoHash?: string
+  files: Array<{ path: string; cid: string; length: number }>
+}
+```
+
+The mapping itself can be content-addressed.
+
+## Package target
+
+`@graphql-api/p2p-cache` should provide source/sink adapters, progress events and CID↔swarm mapping. It should not bundle a public tracker/index or any automatic redistribution policy.
+
+Natural uses are large agent artifacts, workspace snapshots, open datasets and build outputs supplied by the caller.

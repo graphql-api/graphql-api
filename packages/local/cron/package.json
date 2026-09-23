@@ -1,0 +1,65 @@
+{
+  "name": "@graphql-local/cron",
+  "version": "0.1.0",
+  "description": "Local GraphQL cron scheduling with pluggable storage and event streams",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "pnpm --workspace-root exec biome lint packages/local/cron",
+    "format:check": "pnpm --workspace-root exec biome format packages/local/cron",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "keywords": [
+    "graphql",
+    "cron",
+    "scheduler",
+    "indexeddb",
+    "local-first"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/graphql-api/graphql-api.git",
+    "directory": "packages/local/cron"
+  },
+  "bugs": {
+    "url": "https://github.com/graphql-api/graphql-api/issues"
+  },
+  "homepage": "https://github.com/graphql-api/graphql-api/tree/master/packages/local/cron#readme",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "dependencies": {
+    "cron-parser": "5.10.1",
+    "idb": "8.0.3"
+  },
+  "peerDependencies": {
+    "graphql": "^16.14.2 || ^17.0.0"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "fake-indexeddb": "6.2.5",
+    "graphql": "17.0.2",
+    "publint": "0.3.24",
+    "tsdown": "0.23.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.1"
+  }
+}

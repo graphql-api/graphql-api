@@ -1,0 +1,38 @@
+---
+title: Architecture
+description: Boundaries for reusable integrations, composition and the public workspace.
+---
+
+## Package contract
+
+A migrated integration should expose a deterministic schema, generated resolver types, explicit
+configuration and a runtime adapter. The concrete TypeScript contract will be finalized from real
+reference packages rather than invented before migration evidence exists.
+
+```ts
+interface GraphQLIntegration<TConfig, TContext = unknown> {
+  id: string
+  schema: string | DocumentNode
+  createResolvers(config: TConfig): Resolvers<TContext>
+  capabilities: {
+    runtime: Array<'node' | 'edge' | 'browser'>
+    federation?: boolean
+    subscriptions?: boolean
+    uploads?: boolean
+  }
+}
+```
+
+The shape above is a design target, not yet a compatibility promise.
+
+## Composition
+
+Reusable npm packages are not automatically deployed subgraphs. A host application can consume the
+schema/resolvers directly, or attach a Federation 2 adapter when independent deployment is useful.
+This keeps Apollo Router, Hive, Cosmo, Grafbase and other control planes replaceable at application level.
+
+## OpenAPI sources
+
+Where an upstream API publishes a high-quality OpenAPI specification, GraphQL Mesh can be evaluated as
+a conversion/composition tool. Hand-written wrappers remain appropriate where auth, pagination, errors,
+normalization or a deliberately narrow public surface require domain logic.

@@ -1,0 +1,7 @@
+packages:
+  - apps/www
+  - packages/local/cron
+
+allowBuilds:
+  esbuild: true
+  sharp: true

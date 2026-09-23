@@ -1,0 +1,48 @@
+name: Release PR
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-pr-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.6.0
+          run_install: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify release manifests
+        run: pnpm release:check
+
+      - name: Create or update version pull request
+        uses: changesets/action@v2.1.1
+        with:
+          version-script: pnpm version-packages
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pr-title: "chore: version packages"
+          commit-message: "chore: version packages"
+          pr-base-branch: master
