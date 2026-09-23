@@ -34,3 +34,9 @@ jobs:
 
       - name: Verify
         run: pnpm check
+
+      - name: Capture lockfile
+        uses: actions/upload-artifact@v7
+        with:
+          path: pnpm-lock.yaml
+          archive: false
