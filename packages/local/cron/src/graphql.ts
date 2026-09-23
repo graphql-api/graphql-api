@@ -1,6 +1,6 @@
 import { GraphQLScalarType, Kind, type ValueNode } from 'graphql'
 import { type CronScheduler, validateCronExpression } from './scheduler'
-import type { CronEventType, JsonValue, JobStatus } from './types'
+import type { CronEventType, CronJob, CronJobInput, JsonValue, JobStatus } from './types'
 
 function parseJsonLiteral(node: ValueNode): JsonValue {
   switch (node.kind) {
@@ -120,7 +120,38 @@ export const typeDefs = /* GraphQL */ `
   }
 `
 
-export function createResolvers(scheduler: CronScheduler) {
+export interface CronResolverMap {
+  DateTime: GraphQLScalarType
+  Cron: GraphQLScalarType
+  JSON: GraphQLScalarType
+  Query: {
+    jobs: () => Promise<CronJob[]>
+    job: (_parent: unknown, args: { id: string }) => Promise<CronJob | null>
+    jobsByTag: (_parent: unknown, args: { tag: string }) => Promise<CronJob[]>
+    jobsByStatus: (_parent: unknown, args: { status: JobStatus }) => Promise<CronJob[]>
+  }
+  Mutation: {
+    createJob: (_parent: unknown, args: { input: CronJobInput }) => Promise<CronJob>
+    updateJob: (_parent: unknown, args: { id: string; input: CronJobInput }) => Promise<CronJob>
+    deleteJob: (_parent: unknown, args: { id: string }) => Promise<boolean>
+    pauseJob: (_parent: unknown, args: { id: string }) => Promise<CronJob>
+    resumeJob: (_parent: unknown, args: { id: string }) => Promise<CronJob>
+    triggerJobNow: (_parent: unknown, args: { id: string }) => Promise<CronJob>
+  }
+  Subscription: {
+    jobStatusChanged: {
+      subscribe: () => AsyncIterableIterator<Record<string, unknown>>
+    }
+    jobCompleted: {
+      subscribe: () => AsyncIterableIterator<Record<string, unknown>>
+    }
+    jobFailed: {
+      subscribe: () => AsyncIterableIterator<Record<string, unknown>>
+    }
+  }
+}
+
+export function createResolvers(scheduler: CronScheduler): CronResolverMap {
   const dateTime = new GraphQLScalarType({
     name: 'DateTime',
     serialize(value) {
@@ -181,11 +212,11 @@ export function createResolvers(scheduler: CronScheduler) {
         scheduler.getJobsByStatus(status),
     },
     Mutation: {
-      createJob: (_parent: unknown, { input }: { input: Parameters<CronScheduler['createJob']>[0] }) =>
+      createJob: (_parent: unknown, { input }: { input: CronJobInput }) =>
         scheduler.createJob(input),
       updateJob: (
         _parent: unknown,
-        { id, input }: { id: string; input: Parameters<CronScheduler['updateJob']>[1] },
+        { id, input }: { id: string; input: CronJobInput },
       ) => scheduler.updateJob(id, input),
       deleteJob: (_parent: unknown, { id }: { id: string }) => scheduler.deleteJob(id),
       pauseJob: (_parent: unknown, { id }: { id: string }) => scheduler.pauseJob(id),
