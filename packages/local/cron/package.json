@@ -6,12 +6,12 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
-  "main": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md",
@@ -54,8 +54,10 @@
     "graphql": "^16.14.2 || ^17.0.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "fake-indexeddb": "6.2.5",
     "graphql": "17.0.2",
+    "publint": "0.3.24",
     "tsdown": "0.23.0",
     "typescript": "7.0.2",
     "vitest": "5.0.1"
