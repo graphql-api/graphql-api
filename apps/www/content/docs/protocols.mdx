@@ -1,0 +1,54 @@
+---
+title: Protocol architecture
+description: How GraphQL composes with agent, capability, content-addressing and transport standards.
+---
+
+GraphQL is the **typed control, discovery and observability plane**. It should not replace every wire protocol beneath it.
+
+## Layer model
+
+```text
+GraphQL schema + operations + subscriptions
+        │
+        ├─ A2A          agent discovery, tasks, artifacts, streaming
+        ├─ MCP          tools, resources, prompts, durable task handles
+        ├─ ACP          editor ↔ coding-agent sessions
+        ├─ OpenClaw     gateway/session/run adapter
+        ├─ UCAN         delegable capability proofs
+        ├─ IPLD + CAR   content-addressed manifests and artifacts
+        ├─ SSE / WS     GraphQL event delivery
+        └─ libp2p       decentralized data movement
+```
+
+The design rule is simple: **project protocol-native state into GraphQL without destroying it**. An A2A task ID, an MCP task handle or an ACP session ID remains available as an external reference.
+
+## Shared operation model
+
+```graphql
+interface Operation {
+  id: ID!
+  protocol: AgentProtocol!
+  state: OperationState!
+  externalRef: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  artifacts: [Artifact!]!
+}
+
+type Subscription {
+  operationEvents(id: ID!, after: Cursor): OperationEvent!
+}
+```
+
+This gives applications a coherent GraphQL surface while adapters retain the actual protocol semantics.
+
+## Proposed core packages
+
+- `@graphql-api/protocol` — shared scalars, capabilities, operation/artifact contracts;
+- `@graphql-api/events` — cursor/event envelope and replay contract;
+- `@graphql-api/ipld` — CID scalar, codecs, selectors and resolver helpers;
+- `@graphql-api/snapshot` — deterministic IPLD/CAR snapshots;
+- `@graphql-api/worker` — runtime-neutral worker invocation;
+- `@graphql-api/agent-protocol` — agent discovery/operation/artifact projection.
+
+Experimental packages should start in the core workspace and split into independent repositories only after they have a genuinely independent release lifecycle.

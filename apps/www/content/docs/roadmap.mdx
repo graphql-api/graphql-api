@@ -1,0 +1,45 @@
+---
+title: Modernization roadmap
+description: Ordered path from the verified docs workspace to reproducible public packages.
+---
+
+## 0 — Verified baseline
+
+The core branch already proves Node 24, pnpm 12, TypeScript 7, Next 16, React 19, Fumadocs, shadcn-compatible UI, Biome and frozen-lockfile CI.
+
+## 1 — Publishing substrate
+
+- Changesets 3;
+- one package contract and catalog;
+- npm ownership audit;
+- npm Trusted Publishing / OIDC + provenance;
+- reusable CI and release gates;
+- no long-lived npm write token.
+
+## 2 — Reference packages
+
+1. `@graphql-local/cron`
+2. `@graphql-api/stackblitz`
+3. `@graphql-local/file-system-access`
+
+These establish the actual shared package contract before broad migration.
+
+## 3 — Content identity
+
+Modernize `@graphql-local/ipfs` on Helia, then add IPLD/CAR/snapshot contracts and provider adapters such as Pinata where still relevant.
+
+## 4 — Transport and execution
+
+Add event envelope, SSE, WebSocket and worker dispatch packages. Keep large byte streams outside GraphQL JSON.
+
+## 5 — Agent orchestration
+
+Introduce the GraphQL agent control plane plus A2A/MCP/ACP/OpenClaw adapters. Add UCAN when delegated content/worker rights have a concrete proof case.
+
+## 6 — P2P distribution
+
+Prove content-addressed snapshot/artifact distribution over libp2p/IPFS, then add WebTorrent as an optional verified swarm cache.
+
+## Release rule
+
+A repository being visible in the organization is **not** a release signal. A package becomes publishable only after its upstream contract, tests, schema/types, package identity and release provenance are verified.

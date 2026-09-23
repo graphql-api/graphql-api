@@ -1,0 +1,55 @@
+---
+title: Agent orchestration
+description: A GraphQL control plane over A2A, MCP, ACP and OpenClaw-style gateways.
+---
+
+A new proprietary universal agent protocol is not the first move. The ecosystem now has complementary standards that cover different boundaries.
+
+## A2A
+
+Use A2A for **horizontal agent-to-agent collaboration**: Agent Cards, messages, tasks, artifacts, streaming and push updates. The GraphQL adapter should preserve task/context/artifact identities.
+
+## MCP
+
+Use MCP for **tools, resources and prompts**. Long-running work should retain MCP task handles instead of being disguised as a GraphQL-only job.
+
+## ACP
+
+Use ACP where an editor or coding client drives a coding agent. GraphQL can expose endpoint discovery and session observability, while ACP remains the client-agent protocol.
+
+## OpenClaw adapter
+
+OpenClaw's Gateway is useful evidence for a central control plane: roles/scopes, sessions, runs, approvals, cancellation and event streaming. Treat it as an adapter rather than copying its wire protocol.
+
+## Adapter boundary
+
+```ts
+interface AgentProtocolAdapter {
+  protocol: 'a2a' | 'mcp' | 'acp' | 'openclaw'
+  discover(endpoint: URL): Promise<AgentDescriptor>
+  start(input: StartOperation): Promise<ExternalOperationRef>
+  get(ref: ExternalOperationRef): Promise<OperationSnapshot>
+  cancel(ref: ExternalOperationRef): Promise<void>
+  subscribe?(ref: ExternalOperationRef, cursor?: string): AsyncIterable<OperationEvent>
+}
+```
+
+## Example GraphQL projection
+
+```graphql
+mutation StartReview {
+  startOperation(
+    input: {
+      agent: "reviewer"
+      protocol: A2A
+      goal: "Review pull request 20"
+    }
+  ) {
+    id
+    state
+    externalRef
+  }
+}
+```
+
+Follow-up adapters: `agent-a2a`, `agent-mcp`, `agent-acp`, `agent-openclaw`, then decentralized identity experiments such as ANP if a concrete use case emerges.

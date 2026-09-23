@@ -1,4 +1,15 @@
 {
   "title": "GraphQL API",
-  "pages": ["index", "architecture", "packages", "publishing"]
+  "pages": [
+    "index",
+    "architecture",
+    "packages",
+    "protocols",
+    "agents",
+    "snapshots",
+    "transports",
+    "p2p",
+    "publishing",
+    "roadmap"
+  ]
 }

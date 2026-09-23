@@ -1,9 +1,11 @@
 import type { MDXComponents } from 'mdx/types'
 import defaultMdxComponents from 'fumadocs-ui/mdx'
+import { PackageCatalog } from '@/components/package-catalog'
 
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
+    PackageCatalog,
     ...components,
   } satisfies MDXComponents
 }
