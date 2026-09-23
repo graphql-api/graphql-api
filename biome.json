@@ -3,6 +3,8 @@
   "files": {
     "includes": [
       "apps/www/**",
+      "scripts/**",
+      ".changeset/**/*.json",
       "package.json",
       "turbo.json",
       "tsconfig.base.json",
