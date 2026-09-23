@@ -3,7 +3,10 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   entry: ['./src/index.ts'],
   format: ['esm'],
-  dts: true,
+  dts: {
+    generator: 'oxc',
+    resolver: 'oxc',
+  },
   clean: true,
   platform: 'neutral',
   deps: {
